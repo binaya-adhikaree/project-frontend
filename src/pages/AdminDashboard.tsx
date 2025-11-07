@@ -1,0 +1,1553 @@
+import { useEffect, useState, useContext } from "react";
+import api from "../api/axios";
+import { AuthContext } from "../context/AuthContext";
+import { Eye, Trash2, Lock, Unlock, Edit, ArrowLeft, FileText, Upload as UploadIcon } from "lucide-react";
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  phone?: string;
+  company_name?: string;
+  assigned_location?: number | null;
+}
+
+interface Location {
+  id: number;
+  name: string;
+  address: string;
+  city: string;
+  postal_code: string;
+  location_id: string;
+  current_operator?: {
+    id: number;
+    username: string;
+    first_name: string;
+    last_name: string;
+  } | null;
+}
+
+interface Document {
+  id: number;
+  section: string;
+  file_url: string;
+  uploaded_by: string | { username: string; first_name: string; last_name: string };
+  location: number;
+  locked: boolean;
+  uploaded_at: string;
+}
+
+interface FormSubmission {
+  id: number;
+  section: string;
+  data: any;
+  submitted_by: string | { username: string; first_name: string; last_name: string };
+  location: number;
+  locked: boolean;
+  submitted_at: string;
+}
+
+const getFormFields = (section: string) => {
+  const formConfigs: Record<string, any[]> = {
+    "3.1": [
+      { name: "disposal_company", label: "Disposal Company Name", type: "text" },
+      { name: "disposal_date", label: "Last Disposal Date", type: "date" },
+      { name: "maintenance_company", label: "Maintenance Company", type: "text" },
+      { name: "maintenance_date", label: "Last Maintenance Date", type: "date" },
+      { name: "inspection_company", label: "Inspection Company", type: "text" },
+      { name: "inspection_date", label: "Last Inspection Date", type: "date" },
+      { name: "notes", label: "Additional Notes", type: "textarea" },
+    ],
+    "3.2": [
+      { name: "disposal_method", label: "Disposal Method", type: "select", options: ["Regular Collection", "Special Disposal", "Recycling", "Other"] },
+      { name: "disposal_frequency", label: "Disposal Frequency", type: "select", options: ["Daily", "Weekly", "Bi-weekly", "Monthly"] },
+      { name: "waste_types", label: "Waste Types", type: "text" },
+      { name: "self_inspection_date", label: "Self-Inspection Date", type: "date" },
+      { name: "inspector_name", label: "Inspector Name", type: "text" },
+      { name: "defects_found", label: "Defects Found", type: "select", options: ["None", "Minor", "Major"] },
+      { name: "corrective_actions", label: "Corrective Actions Taken", type: "textarea" },
+    ],
+    "3.3": [
+      { name: "equipment_name", label: "Equipment/System Name", type: "text" },
+      { name: "maintenance_type", label: "Maintenance Type", type: "select", options: ["Preventive", "Corrective", "Emergency", "Routine"] },
+      { name: "technician_name", label: "Technician Name", type: "text" },
+      { name: "company_name", label: "Service Company", type: "text" },
+      { name: "maintenance_date", label: "Maintenance Date", type: "date" },
+      { name: "work_performed", label: "Work Performed", type: "textarea" },
+      { name: "parts_replaced", label: "Parts Replaced", type: "text" },
+      { name: "next_maintenance_due", label: "Next Maintenance Due", type: "date" },
+    ],
+    "3.4": [
+      { name: "defect_description", label: "Defect Description", type: "textarea" },
+      { name: "defect_location", label: "Location of Defect", type: "text" },
+      { name: "severity", label: "Severity Level", type: "select", options: ["Low", "Medium", "High", "Critical"] },
+      { name: "detected_date", label: "Date Detected", type: "date" },
+      { name: "detected_by", label: "Detected By", type: "text" },
+      { name: "repair_date", label: "Repair Date", type: "date" },
+      { name: "repaired_by", label: "Repaired By", type: "text" },
+      { name: "repair_description", label: "Repair Description", type: "textarea" },
+      { name: "status", label: "Status", type: "select", options: ["Pending", "In Progress", "Completed"] },
+    ],
+  };
+  return formConfigs[section] || [];
+};
+
+const getUsername = (user: string | { username: string; first_name?: string; last_name?: string }): string => {
+  if (typeof user === 'string') return user;
+  if (user?.first_name && user?.last_name) {
+    return `${user.first_name} ${user.last_name}`;
+  }
+  return user?.username || 'Unknown';
+};
+
+const getFileNameFromUrl = (url: string): string => {
+  try {
+    // Extract filename from Cloudinary URL
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    // Decode URI component to handle special characters
+    return decodeURIComponent(filename);
+  } catch {
+    return 'document.pdf';
+  }
+};
+
+export const AdminDashboard = () => {
+  const { user: admin } = useContext(AuthContext);
+
+  const [activeTab, setActiveTab] = useState<"users" | "locations">("users");
+  const [users, setUsers] = useState<User[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Location Detail View
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [locationDocuments, setLocationDocuments] = useState<Document[]>([]);
+  const [locationForms, setLocationForms] = useState<FormSubmission[]>([]);
+  const [loadingLocationDetail, setLoadingLocationDetail] = useState(false);
+
+  // User form states
+  const [newUser, setNewUser] = useState({
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    password2: "",
+    role: "GASTRONOM",
+    phone: "",
+    company_name: "",
+    assigned_location: "",
+  });
+
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [editingUser, setEditingUser] = useState<any>({});
+
+  // Location form states
+  const [newLocation, setNewLocation] = useState({
+    name: "",
+    address: "",
+    city: "Berlin",
+    postal_code: "",
+    location_id: "",
+  });
+
+  const [editingLocationId, setEditingLocationId] = useState<number | null>(null);
+  const [editingLocation, setEditingLocation] = useState<any>({});
+
+  // Assign operator modal
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assigningLocationId, setAssigningLocationId] = useState<number | null>(null);
+  const [selectedOperatorId, setSelectedOperatorId] = useState("");
+
+  // View/Edit form modals
+  const [viewingForm, setViewingForm] = useState<FormSubmission | null>(null);
+  const [editingForm, setEditingForm] = useState<FormSubmission | null>(null);
+  const [editFormData, setEditFormData] = useState<any>({});
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    await Promise.all([fetchUsers(), fetchLocations()]);
+    setLoading(false);
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const res = await api.get("/users/", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      const data = Array.isArray(res.data) ? res.data : res.data.results || [];
+      setUsers(data);
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const res = await api.get("/locations/", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      const data = Array.isArray(res.data) ? res.data : res.data.results || [];
+      setLocations(data);
+    } catch (err) {
+      console.error("Failed to fetch locations:", err);
+    }
+  };
+
+  const fetchLocationDetails = async (locationId: number) => {
+    setLoadingLocationDetail(true);
+    try {
+      const [docsRes, formsRes] = await Promise.all([
+        api.get(`/documents/?location=${locationId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }),
+        api.get(`/forms/?location=${locationId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }),
+      ]);
+
+      const docs = Array.isArray(docsRes.data) ? docsRes.data : docsRes.data.results || [];
+      const forms = Array.isArray(formsRes.data) ? formsRes.data : formsRes.data.results || [];
+
+      console.log('📄 Documents fetched:', docs);
+      console.log('📋 Forms fetched:', forms);
+
+      setLocationDocuments(docs);
+      setLocationForms(forms);
+    } catch (err) {
+      console.error("Failed to fetch location details:", err);
+      alert("❌ Failed to load location details. Check console for errors.");
+    } finally {
+      setLoadingLocationDetail(false);
+    }
+  };
+
+  const handleViewLocation = (location: Location) => {
+    setSelectedLocation(location);
+    fetchLocationDetails(location.id);
+  };
+
+  const handleBackToList = () => {
+    setSelectedLocation(null);
+    setLocationDocuments([]);
+    setLocationForms([]);
+  };
+
+
+
+  const handleToggleDocumentLock = async (docId: number) => {
+    try {
+      const res = await api.post(
+        `/documents/${docId}/toggle_lock/`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }
+      );
+      alert(res.data.detail);
+      if (selectedLocation) {
+        fetchLocationDetails(selectedLocation.id);
+      }
+    } catch (err: any) {
+      console.error("Failed to toggle document lock:", err);
+      alert(err.response?.data?.detail || "Failed to toggle document lock");
+    }
+  };
+
+  const handleDeleteDocument = async (docId: number) => {
+    if (!confirm("⚠️ Are you sure you want to delete this document? This action cannot be undone.")) return;
+
+    try {
+      await api.delete(`/documents/${docId}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      alert("✅ Document deleted successfully!");
+      if (selectedLocation) {
+        fetchLocationDetails(selectedLocation.id);
+      }
+    } catch (err) {
+      console.error("Failed to delete document:", err);
+      alert("❌ Failed to delete document");
+    }
+  };
+
+
+
+  const handleToggleFormLock = async (formId: number) => {
+    try {
+      const res = await api.post(
+        `/forms/${formId}/toggle_lock/`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }
+      );
+      alert(res.data.detail);
+      if (selectedLocation) {
+        fetchLocationDetails(selectedLocation.id);
+      }
+    } catch (err: any) {
+      console.error("Failed to toggle form lock:", err);
+      alert(err.response?.data?.detail || "Failed to toggle form lock");
+    }
+  };
+
+  const handleViewForm = (form: FormSubmission) => {
+    setViewingForm(form);
+  };
+
+  const handleEditForm = (form: FormSubmission) => {
+    setEditingForm(form);
+    setEditFormData(form.data || {});
+  };
+
+  const handleFormFieldChange = (fieldName: string, value: any) => {
+    setEditFormData((prev: any) => ({
+      ...prev,
+      [fieldName]: value
+    }));
+  };
+
+  const handleUpdateForm = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingForm) return;
+
+    try {
+      await api.patch(
+        `/forms/${editingForm.id}/`,
+        { data: editFormData },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }
+      );
+      alert("✅ Form updated successfully!");
+      setEditingForm(null);
+      setEditFormData({});
+      if (selectedLocation) {
+        fetchLocationDetails(selectedLocation.id);
+      }
+    } catch (err: any) {
+      console.error("Failed to update form:", err);
+      alert(err.response?.data?.detail || "❌ Failed to update form");
+    }
+  };
+
+  const handleDeleteForm = async (formId: number) => {
+    if (!confirm("⚠️ Are you sure you want to delete this form? This action cannot be undone.")) return;
+
+    try {
+      await api.delete(`/forms/${formId}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      alert("✅ Form deleted successfully!");
+      if (selectedLocation) {
+        fetchLocationDetails(selectedLocation.id);
+      }
+    } catch (err) {
+      console.error("Failed to delete form:", err);
+      alert("❌ Failed to delete form");
+    }
+  };
+
+
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const payload = {
+      username: newUser.username,
+      email: newUser.email,
+      password: newUser.password,
+      password2: newUser.password2,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      role: newUser.role,
+      phone: newUser.phone || "",
+      company_name: newUser.role === "EXTERNAL" ? newUser.company_name : "",
+    };
+
+    try {
+      const res = await api.post("/users/", payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+
+      if (newUser.assigned_location && res.data.id) {
+        await assignLocationToUser(res.data.id, Number(newUser.assigned_location));
+      }
+
+      await fetchUsers();
+
+      setNewUser({
+        username: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+        password2: "",
+        role: "GASTRONOM",
+        phone: "",
+        company_name: "",
+        assigned_location: "",
+      });
+
+      alert("✅ User created successfully!");
+    } catch (err: any) {
+      console.error("❌ Create user failed:", err.response?.data || err);
+
+      if (err.response?.data) {
+        const errors = err.response.data;
+        const errorMessages = Object.entries(errors)
+          .map(([field, msgs]: [string, any]) => {
+            const message = Array.isArray(msgs) ? msgs.join(", ") : msgs;
+            return `${field}: ${message}`;
+          })
+          .join("\n");
+        alert(`Failed to create user:\n\n${errorMessages}`);
+      } else {
+        alert("Failed to create user. Check console for details.");
+      }
+    }
+  };
+
+  const assignLocationToUser = async (userId: number, locationId: number) => {
+    try {
+      await api.post(
+        `/locations/${locationId}/assign_operator/`,
+        { operator_id: userId },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }
+      );
+      console.log("✅ Location assigned successfully");
+    } catch (err) {
+      console.error("❌ Failed to assign location:", err);
+      alert("User created but failed to assign location. Please assign manually.");
+    }
+  };
+
+  const handleEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUserId) return;
+
+    const payload = {
+      email: editingUser.email,
+      first_name: editingUser.first_name,
+      last_name: editingUser.last_name,
+      phone: editingUser.phone || "",
+      company_name: editingUser.company_name || "",
+    };
+
+    try {
+      const res = await api.patch(`/users/${editingUserId}/`, payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      setUsers(users.map((u) => (u.id === editingUserId ? res.data : u)));
+      setEditingUserId(null);
+      setEditingUser({});
+      alert("✅ User updated successfully!");
+    } catch (err: any) {
+      console.error("❌ Edit user failed:", err.response?.data || err);
+      alert("Failed to edit user. Check console for details.");
+    }
+  };
+
+  const handleDeleteUser = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      await api.delete(`/users/${id}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      setUsers(users.filter((u) => u.id !== id));
+      alert("✅ User deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete user.");
+    }
+  };
+
+
+
+  const handleCreateLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await api.post("/locations/", newLocation, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+
+      await fetchLocations();
+
+      setNewLocation({
+        name: "",
+        address: "",
+        city: "Berlin",
+        postal_code: "",
+        location_id: "",
+      });
+
+      alert("✅ Location created successfully!");
+    } catch (err: any) {
+      console.error("❌ Create location failed:", err.response?.data || err);
+
+      if (err.response?.data) {
+        const errors = err.response.data;
+        const errorMessages = Object.entries(errors)
+          .map(([field, msgs]: [string, any]) => {
+            const message = Array.isArray(msgs) ? msgs.join(", ") : msgs;
+            return `${field}: ${message}`;
+          })
+          .join("\n");
+        alert(`Failed to create location:\n\n${errorMessages}`);
+      } else {
+        alert("Failed to create location. Check console for details.");
+      }
+    }
+  };
+
+  const handleEditLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLocationId) return;
+
+    try {
+      const res = await api.patch(`/locations/${editingLocationId}/`, editingLocation, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      setLocations(locations.map((loc) => (loc.id === editingLocationId ? res.data : loc)));
+      setEditingLocationId(null);
+      setEditingLocation({});
+      alert("✅ Location updated successfully!");
+    } catch (err: any) {
+      console.error("❌ Edit location failed:", err.response?.data || err);
+      alert("Failed to edit location. Check console for details.");
+    }
+  };
+
+  const handleDeleteLocation = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this location? All associated data will remain but the location will be removed.")) return;
+
+    try {
+      await api.delete(`/locations/${id}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+      });
+      setLocations(locations.filter((loc) => loc.id !== id));
+      alert("✅ Location deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete location.");
+    }
+  };
+
+  const handleAssignOperator = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assigningLocationId || !selectedOperatorId) return;
+
+    try {
+      await api.post(
+        `/locations/${assigningLocationId}/assign_operator/`,
+        { operator_id: Number(selectedOperatorId) },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
+        }
+      );
+
+      await fetchLocations();
+      await fetchUsers();
+
+      setShowAssignModal(false);
+      setAssigningLocationId(null);
+      setSelectedOperatorId("");
+
+      alert("✅ Operator assigned successfully!");
+    } catch (err: any) {
+      console.error("❌ Assign operator failed:", err.response?.data || err);
+      alert("Failed to assign operator. Check console for details.");
+    }
+  };
+
+  const getGastronomUsers = () => {
+    return users.filter((u) => u.role === "GASTRONOM");
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-yellow-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-semibold">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+
+  if (selectedLocation) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+
+        <button
+          onClick={handleBackToList}
+          className="mb-6 flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Locations
+        </button>
+
+
+        <div className="bg-linear-to-r from-amber-50 to-yellow-50 rounded-2xl shadow-xl p-6 mb-6 border-2 border-amber-300">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            📍 {selectedLocation.name}
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-sm text-gray-600 mb-1">Location ID</p>
+              <p className="text-lg font-semibold text-amber-700">{selectedLocation.location_id}</p>
+            </div>
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <p className="text-sm text-gray-600 mb-1">Address</p>
+              <p className="text-lg font-semibold text-gray-800">
+                {selectedLocation.address}, {selectedLocation.city} {selectedLocation.postal_code}
+              </p>
+            </div>
+            {selectedLocation.current_operator && (
+              <div className="bg-white rounded-lg p-4 shadow-sm md:col-span-2">
+                <p className="text-sm text-gray-600 mb-1">Current Operator</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {selectedLocation.current_operator.first_name} {selectedLocation.current_operator.last_name}
+                  <span className="text-sm text-gray-500 ml-2">(@{selectedLocation.current_operator.username})</span>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {loadingLocationDetail ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading location details...</p>
+          </div>
+        ) : (
+          <>
+
+            <div className="mb-8 bg-white border rounded-2xl shadow-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <FileText className="w-6 h-6" />
+                  Form Submissions ({locationForms.length})
+                </h2>
+              </div>
+              {locationForms.length === 0 ? (
+                <div className="p-12 text-center">
+                  <FileText className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-gray-500 text-lg">No form submissions found for this location.</p>
+                </div>
+              ) : (
+                <div className="p-6 space-y-4">
+                  {locationForms.map((form) => (
+                    <div
+                      key={form.id}
+                      className="border-2 border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all bg-gray-50"
+                    >
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-gray-800 mb-2">{form.section}</h3>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span>
+                              <strong>Submitted by:</strong> {getUsername(form.submitted_by)}
+                            </span>
+                            <span>
+                              <strong>Date:</strong> {new Date(form.submitted_at).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${form.locked
+                                ? "bg-red-100 text-red-800"
+                                : "bg-green-100 text-green-800"
+                              }`}
+                          >
+                            {form.locked ? (
+                              <>
+                                <Lock className="w-4 h-4" />
+                                Locked
+                              </>
+                            ) : (
+                              <>
+                                <Unlock className="w-4 h-4" />
+                                Unlocked
+                              </>
+                            )}
+                          </span>
+                          <button
+                            onClick={() => handleViewForm(form)}
+                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                            title="View Form"
+                          >
+                            <Eye className="w-5 h-5 text-blue-600" />
+                          </button>
+                          <button
+                            onClick={() => handleEditForm(form)}
+                            className="p-2 hover:bg-yellow-100 rounded-lg transition-colors"
+                            title="Edit Form"
+                          >
+                            <Edit className="w-5 h-5 text-yellow-600" />
+                          </button>
+                          <button
+                            onClick={() => handleToggleFormLock(form.id)}
+                            className={`p-2 rounded-lg transition-colors ${form.locked
+                                ? "hover:bg-green-100"
+                                : "hover:bg-orange-100"
+                              }`}
+                            title={form.locked ? "Unlock Form" : "Lock Form"}
+                          >
+                            {form.locked ? (
+                              <Unlock className="w-5 h-5 text-green-600" />
+                            ) : (
+                              <Lock className="w-5 h-5 text-orange-600" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteForm(form.id)}
+                            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                            title="Delete Form"
+                          >
+                            <Trash2 className="w-5 h-5 text-red-600" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+
+            <div className="bg-white border rounded-2xl shadow-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                  <UploadIcon className="w-6 h-6" />
+                  Documents ({locationDocuments.length})
+                </h2>
+              </div>
+              {locationDocuments.length === 0 ? (
+                <div className="p-12 text-center">
+                  <UploadIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <p className="text-gray-500 text-lg">No documents uploaded for this location.</p>
+                </div>
+              ) : (
+                <div className="p-6 space-y-4">
+                  {locationDocuments.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="border-2 border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all bg-gray-50"
+                    >
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-gray-800 mb-2">{doc.section}</h3>
+                          <p className="text-sm text-gray-600 mb-2 break-all">
+                            {getFileNameFromUrl(doc.file_url)}
+                          </p>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span>
+                              <strong>Uploaded by:</strong> {getUsername(doc.uploaded_by)}
+                            </span>
+                            <span>
+                              <strong>Date:</strong> {new Date(doc.uploaded_at).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${doc.locked
+                                ? "bg-red-100 text-red-800"
+                                : "bg-green-100 text-green-800"
+                              }`}
+                          >
+                            {doc.locked ? (
+                              <>
+                                <Lock className="w-4 h-4" />
+                                Locked
+                              </>
+                            ) : (
+                              <>
+                                <Unlock className="w-4 h-4" />
+                                Unlocked
+                              </>
+                            )}
+                          </span>
+                          <a
+                            href={doc.file_url.endsWith('.pdf') ? doc.file_url : `${doc.file_url}.pdf`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                            title="View Document"
+                          >
+                            <Eye className="w-5 h-5 text-blue-600" />
+                          </a>
+
+                          <button
+                            onClick={() => handleToggleDocumentLock(doc.id)}
+                            className={`p-2 rounded-lg transition-colors ${doc.locked
+                                ? "hover:bg-green-100"
+                                : "hover:bg-orange-100"
+                              }`}
+                            title={doc.locked ? "Unlock Document" : "Lock Document"}
+                          >
+                            {doc.locked ? (
+                              <Unlock className="w-5 h-5 text-green-600" />
+                            ) : (
+                              <Lock className="w-5 h-5 text-orange-600" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDocument(doc.id)}
+                            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                            title="Delete Document"
+                          >
+                            <Trash2 className="w-5 h-5 text-red-600" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+
+        {viewingForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-3xl my-8">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                  View Form - {viewingForm.section}
+                </h2>
+                <button
+                  onClick={() => setViewingForm(null)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Submitted By</p>
+                    <p className="text-lg font-semibold text-gray-800">{getUsername(viewingForm.submitted_by)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Submitted At</p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {new Date(viewingForm.submitted_at).toLocaleDateString('en-US', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-gray-800 border-b pb-2 mb-4">Form Data</h3>
+                <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                  {getFormFields(viewingForm.section).map((field) => {
+                    const value = viewingForm.data[field.name];
+
+                    return (
+                      <div key={field.name} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          {field.label}
+                        </label>
+
+                        {field.type === "textarea" ? (
+                          <p className="text-gray-800 whitespace-pre-wrap">
+                            {value || <span className="text-gray-400 italic">Not provided</span>}
+                          </p>
+                        ) : field.type === "date" ? (
+                          <p className="text-gray-800">
+                            {value ? new Date(value).toLocaleDateString('en-US', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            }) : <span className="text-gray-400 italic">Not provided</span>}
+                          </p>
+                        ) : (
+                          <p className="text-gray-800">
+                            {value || <span className="text-gray-400 italic">Not provided</span>}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setViewingForm(null)}
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+        {editingForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <form
+              onSubmit={handleUpdateForm}
+              className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-3xl my-8"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                  <Edit className="w-6 h-6 text-yellow-600" />
+                  Edit Form - {editingForm.section}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingForm(null);
+                    setEditFormData({});
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="mb-6 space-y-4 max-h-96 overflow-y-auto pr-2">
+                {getFormFields(editingForm.section).map((field) => (
+                  <div key={field.name}>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      {field.label}
+                    </label>
+
+                    {field.type === "text" && (
+                      <input
+                        type="text"
+                        value={editFormData[field.name] || ""}
+                        onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
+                        className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    )}
+
+                    {field.type === "date" && (
+                      <input
+                        type="date"
+                        value={editFormData[field.name] || ""}
+                        onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
+                        className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    )}
+
+                    {field.type === "select" && (
+                      <select
+                        value={editFormData[field.name] || ""}
+                        onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
+                        className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      >
+                        <option value="">-- Select {field.label} --</option>
+                        {field.options?.map((option: string) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+
+                    {field.type === "textarea" && (
+                      <textarea
+                        value={editFormData[field.name] || ""}
+                        onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
+                        className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        rows={4}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4 mb-6">
+                <p className="text-sm text-gray-700">
+                  <strong>Admin Override:</strong> You can edit this form even if it's locked. Changes will be saved immediately.
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingForm(null);
+                    setEditFormData({});
+                  }}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+
+  return (
+    <div className="p-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">🔧 Admin Dashboard</h1>
+        <p className="text-gray-600">
+          Logged in as: <span className="font-semibold">{admin?.username}</span> ({admin?.role})
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex space-x-2 mb-6 border-b">
+        <button
+          onClick={() => setActiveTab("users")}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "users"
+              ? "border-b-4 border-yellow-500 text-yellow-600"
+              : "text-gray-500 hover:text-gray-700"
+            }`}
+        >
+          👥 User Management
+        </button>
+        <button
+          onClick={() => setActiveTab("locations")}
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "locations"
+              ? "border-b-4 border-yellow-500 text-yellow-600"
+              : "text-gray-500 hover:text-gray-700"
+            }`}
+        >
+          📍 Location Management
+        </button>
+      </div>
+
+      {activeTab === "users" && (
+        <>
+          {/* Create User Form */}
+          <div className="mb-8 border border-yellow-400 p-6 rounded-lg bg-yellow-50 shadow-md">
+            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Create New User</h2>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateUser}>
+              <input
+                type="text"
+                placeholder="Username *"
+                value={newUser.username}
+                onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email *"
+                value={newUser.email}
+                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="First Name *"
+                value={newUser.first_name}
+                onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Last Name *"
+                value={newUser.last_name}
+                onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password *"
+                value={newUser.password}
+                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password *"
+                value={newUser.password2}
+                onChange={(e) => setNewUser({ ...newUser, password2: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+              <input
+                type="tel"
+                placeholder="Phone (optional)"
+                value={newUser.phone}
+                onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+              />
+              <select
+                value={newUser.role}
+                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+              >
+                <option value="ADMIN">ADMIN</option>
+                <option value="GASTRONOM">GASTRONOM</option>
+                <option value="EXTERNAL">EXTERNAL</option>
+              </select>
+
+              {newUser.role === "EXTERNAL" && (
+                <input
+                  type="text"
+                  placeholder="Company Name (required for External) *"
+                  value={newUser.company_name}
+                  onChange={(e) => setNewUser({ ...newUser, company_name: e.target.value })}
+                  className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                  required
+                />
+              )}
+
+              <select
+                value={newUser.assigned_location}
+                onChange={(e) => setNewUser({ ...newUser, assigned_location: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                disabled={newUser.role !== "GASTRONOM"}
+              >
+                <option value="">Assign Location (optional)</option>
+                {locations.map((loc) => (
+                  <option key={loc.id} value={loc.id}>
+                    {loc.name} - {loc.location_id}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="submit"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded col-span-2 font-semibold transition-all shadow-md"
+              >
+                Create User
+              </button>
+            </form>
+          </div>
+
+          {/* Users Table */}
+          <div className="bg-white border rounded-lg shadow-md overflow-hidden">
+            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">All Users ({users.length})</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="p-3 text-left border-b">Username</th>
+                    <th className="p-3 text-left border-b">Email</th>
+                    <th className="p-3 text-left border-b">Name</th>
+                    <th className="p-3 text-left border-b">Role</th>
+                    <th className="p-3 text-left border-b">Phone</th>
+                    <th className="p-3 text-left border-b">Company</th>
+                    <th className="p-3 text-left border-b">Location</th>
+                    <th className="p-3 text-left border-b">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((u) => (
+                    <tr key={u.id} className="hover:bg-gray-50 border-b">
+                      <td className="p-3">{u.username}</td>
+                      <td className="p-3">{u.email}</td>
+                      <td className="p-3">{u.first_name} {u.last_name}</td>
+                      <td className="p-3">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
+                              ? "bg-red-100 text-red-800"
+                              : u.role === "GASTRONOM"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                        >
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="p-3">{u.phone || "-"}</td>
+                      <td className="p-3">{u.company_name || "-"}</td>
+                      <td className="p-3">{u.assigned_location || "-"}</td>
+                      <td className="p-3 space-x-2">
+                        <button
+                          className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => {
+                            setEditingUserId(u.id);
+                            setEditingUser(u);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => handleDeleteUser(u.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === "locations" && (
+        <>
+          {/* Create Location Form */}
+          <div className="mb-8 border border-blue-400 p-6 rounded-lg bg-blue-50 shadow-md">
+            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Create New Location</h2>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateLocation}>
+              <input
+                type="text"
+                placeholder="Restaurant Name *"
+                value={newLocation.name}
+                onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Location ID (e.g., BERLIN-001) *"
+                value={newLocation.location_id}
+                onChange={(e) => setNewLocation({ ...newLocation, location_id: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Address *"
+                value={newLocation.address}
+                onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="City *"
+                value={newLocation.city}
+                onChange={(e) => setNewLocation({ ...newLocation, city: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Postal Code *"
+                value={newLocation.postal_code}
+                onChange={(e) => setNewLocation({ ...newLocation, postal_code: e.target.value })}
+                className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded font-semibold transition-all shadow-md"
+              >
+                Create Location
+              </button>
+            </form>
+          </div>
+
+          {/* Locations Table */}
+          <div className="bg-white border rounded-lg shadow-md overflow-hidden">
+            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
+              All Locations ({locations.length})
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="p-3 text-left border-b">Restaurant Name</th>
+                    <th className="p-3 text-left border-b">Location ID</th>
+                    <th className="p-3 text-left border-b">Address</th>
+                    <th className="p-3 text-left border-b">City</th>
+                    <th className="p-3 text-left border-b">Current Operator</th>
+                    <th className="p-3 text-left border-b">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {locations.map((loc) => (
+                    <tr key={loc.id} className="hover:bg-gray-50 border-b">
+                      <td className="p-3 font-semibold">
+                        <button
+                          onClick={() => handleViewLocation(loc)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {loc.name}
+                        </button>
+                      </td>
+                      <td className="p-3">
+                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-mono">
+                          {loc.location_id}
+                        </span>
+                      </td>
+                      <td className="p-3">{loc.address}</td>
+                      <td className="p-3">{loc.city}, {loc.postal_code}</td>
+                      <td className="p-3">
+                        {loc.current_operator ? (
+                          <div>
+                            <p className="font-semibold">
+                              {loc.current_operator.first_name} {loc.current_operator.last_name}
+                            </p>
+                            <p className="text-xs text-gray-500">@{loc.current_operator.username}</p>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 italic">Not assigned</span>
+                        )}
+                      </td>
+                      <td className="p-3 space-x-2">
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => handleViewLocation(loc)}
+                        >
+                          View Details
+                        </button>
+                        <button
+                          className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => {
+                            setAssigningLocationId(loc.id);
+                            setShowAssignModal(true);
+                          }}
+                        >
+                          Assign
+                        </button>
+                        <button
+                          className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => {
+                            setEditingLocationId(loc.id);
+                            setEditingLocation(loc);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                          onClick={() => handleDeleteLocation(loc.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+
+      {editingUserId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <form
+            onSubmit={handleEditUser}
+            className="bg-white p-6 rounded-lg shadow-xl space-y-3 w-96"
+          >
+            <h2 className="text-xl mb-2 font-bold">Edit User</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={editingUser.email || ""}
+              onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="First Name"
+              value={editingUser.first_name || ""}
+              onChange={(e) => setEditingUser({ ...editingUser, first_name: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={editingUser.last_name || ""}
+              onChange={(e) => setEditingUser({ ...editingUser, last_name: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={editingUser.phone || ""}
+              onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+              className="border p-2 w-full rounded"
+            />
+            <input
+              type="text"
+              placeholder="Company Name"
+              value={editingUser.company_name || ""}
+              onChange={(e) => setEditingUser({ ...editingUser, company_name: e.target.value })}
+              className="border p-2 w-full rounded"
+            />
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  setEditingUserId(null);
+                  setEditingUser({});
+                }}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+
+      {editingLocationId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <form
+            onSubmit={handleEditLocation}
+            className="bg-white p-6 rounded-lg shadow-xl space-y-3 w-96"
+          >
+            <h2 className="text-xl mb-2 font-bold">Edit Location</h2>
+            <input
+              type="text"
+              placeholder="Restaurant Name"
+              value={editingLocation.name || ""}
+              onChange={(e) => setEditingLocation({ ...editingLocation, name: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Address"
+              value={editingLocation.address || ""}
+              onChange={(e) => setEditingLocation({ ...editingLocation, address: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="City"
+              value={editingLocation.city || ""}
+              onChange={(e) => setEditingLocation({ ...editingLocation, city: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <input
+              type="text"
+              placeholder="Postal Code"
+              value={editingLocation.postal_code || ""}
+              onChange={(e) => setEditingLocation({ ...editingLocation, postal_code: e.target.value })}
+              className="border p-2 w-full rounded"
+              required
+            />
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  setEditingLocationId(null);
+                  setEditingLocation({});
+                }}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <form
+            onSubmit={handleAssignOperator}
+            className="bg-white p-6 rounded-lg shadow-xl w-96"
+          >
+            <h2 className="text-xl mb-4 font-bold">Assign Operator to Location</h2>
+
+            <div className="mb-4">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Select Gastronom (Restaurant Operator) *
+              </label>
+              <select
+                value={selectedOperatorId}
+                onChange={(e) => setSelectedOperatorId(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-lg focus:ring-2 focus:ring-purple-500"
+                required
+              >
+                <option value="">-- Select Gastronom --</option>
+                {getGastronomUsers().map((gastro) => (
+                  <option key={gastro.id} value={gastro.id}>
+                    {gastro.first_name} {gastro.last_name} (@{gastro.username})
+                  </option>
+                ))}
+              </select>
+              {getGastronomUsers().length === 0 && (
+                <p className="text-xs text-red-500 mt-1">
+                  No Gastronom users available. Create a Gastronom user first.
+                </p>
+              )}
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-300 rounded p-3 mb-4">
+              <p className="text-sm text-gray-700">
+                <strong>Note:</strong> If this location already has an operator, they will be replaced.
+                The previous operator will lose access, but all historical data will remain.
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAssignModal(false);
+                  setAssigningLocationId(null);
+                  setSelectedOperatorId("");
+                }}
+                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!selectedOperatorId}
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Assign Operator
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}; 
