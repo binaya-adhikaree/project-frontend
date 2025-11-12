@@ -434,7 +434,7 @@ export const UserDashboard = () => {
 
       const token = localStorage.getItem("access");
 
-      const response = await api.post("/documents/", formData, {
+      await api.post("/documents/", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
