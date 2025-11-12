@@ -276,8 +276,7 @@ export const UserDashboard = () => {
         location: Number(selectedLocation.id)
       };
 
-
-      const response = await api.post("/location-access/", payload, {
+       await api.post("/location-access/", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

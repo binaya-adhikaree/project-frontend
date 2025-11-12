@@ -5,7 +5,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach token if available, but skip login endpoint
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access");
   if (token && !config.url?.endsWith("/auth/login/")) {
