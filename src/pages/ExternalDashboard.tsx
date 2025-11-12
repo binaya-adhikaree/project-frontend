@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, FileText, Upload, Lock, Eye, Download, AlertCircle, CheckCircle, Edit, Save, X, Plus } from 'lucide-react';
-import api from "../api/axios";
+
 
 
 interface User {
@@ -39,6 +39,7 @@ interface Document {
   uploaded_at: string;
   locked: boolean;
   location: number;
+  resource_type: string
 }
 
 interface FormSubmission {
@@ -70,7 +71,7 @@ const ExternalDashboard: React.FC = () => {
   const [uploadSection, setUploadSection] = useState('');
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<Message>({ type: '', text: '' });
-  
+
   const [editingForm, setEditingForm] = useState<FormSubmission | null>(null);
   const [newFormSection, setNewFormSection] = useState('');
   const [formData, setFormData] = useState<any>({});
@@ -151,121 +152,121 @@ const ExternalDashboard: React.FC = () => {
     }
   }, [selectedLocation]);
 
-const fetchLocations = async () => {
-  try {
-    console.log("🔄 Fetching locations for external user...");
-    
-    const response = await fetch(`${API_BASE}/location-access/`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ Failed to fetch location access:", response.status, errorText);
-      throw new Error(`Failed to fetch location access: ${response.status}`);
-    }
-    
-    const accessData: LocationAccess[] = await response.json();
-    console.log("📦 Raw Location Access Data:", accessData);
-    console.log("📊 Total access records:", accessData.length);
-    
-    // Filter active access
-    const activeAccess = accessData.filter((access: LocationAccess) => {
-      console.log("🔍 Checking access:", {
-        id: access.id,
-        is_active: access.is_active,
-        location: access.location,
-        location_detail: access.location_detail
+  const fetchLocations = async () => {
+    try {
+      console.log("🔄 Fetching locations for external user...");
+
+      const response = await fetch(`${API_BASE}/location-access/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
-      return access.is_active;
-    });
-    
-    console.log("✅ Active Access Records:", activeAccess.length);
-    
-    if (activeAccess.length === 0) {
-      console.warn("⚠️ No active access found for this user");
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Failed to fetch location access:", response.status, errorText);
+        throw new Error(`Failed to fetch location access: ${response.status}`);
+      }
+
+      const accessData: LocationAccess[] = await response.json();
+      console.log("📦 Raw Location Access Data:", accessData);
+      console.log("📊 Total access records:", accessData.length);
+
+      // Filter active access
+      const activeAccess = accessData.filter((access: LocationAccess) => {
+        console.log("🔍 Checking access:", {
+          id: access.id,
+          is_active: access.is_active,
+          location: access.location,
+          location_detail: access.location_detail
+        });
+        return access.is_active;
+      });
+
+      console.log("✅ Active Access Records:", activeAccess.length);
+
+      if (activeAccess.length === 0) {
+        console.warn("⚠️ No active access found for this user");
+        setLocations([]);
+        setLoading(false);
+        return;
+      }
+
+      // Extract locations from active access
+      const locationsList: Location[] = activeAccess
+        .map((access: LocationAccess, index: number) => {
+          console.log(`🔍 Processing access ${index + 1}:`, access);
+
+          // Priority 1: location_detail (most complete)
+          if (access.location_detail) {
+            console.log(`✅ Found location_detail:`, access.location_detail);
+            return access.location_detail;
+          }
+
+          // Priority 2: location as object
+          if (typeof access.location === 'object' && access.location !== null) {
+            console.log(`✅ Found location as object:`, access.location);
+            return access.location as Location;
+          }
+
+          // Priority 3: location as ID (can't use directly)
+          if (typeof access.location === 'number') {
+            console.warn(`⚠️ Location is just an ID (${access.location}), cannot extract details`);
+            return null;
+          }
+
+          console.warn("⚠️ No usable location data found in access record");
+          return null;
+        })
+        .filter((loc): loc is Location => {
+          if (loc === null) {
+            console.warn("⚠️ Filtered out null location");
+            return false;
+          }
+          console.log("✅ Valid location:", loc.name);
+          return true;
+        });
+
+      console.log("📍 Final Extracted Locations:", locationsList);
+      console.log("📊 Total valid locations:", locationsList.length);
+
+      if (locationsList.length === 0) {
+        console.error("❌ No valid locations extracted from access data");
+        setMessage({
+          type: 'error',
+          text: 'Could not load location details. Please contact support.'
+        });
+      }
+
+      setLocations(locationsList);
+
+      if (locationsList.length > 0) {
+        setSelectedLocation(locationsList[0]);
+        console.log("✅ Auto-selected first location:", locationsList[0].name);
+      }
+
+      setLoading(false);
+
+    } catch (error: any) {
+      console.error('❌ Error fetching locations:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        stack: error.stack
+      });
+
+      setMessage({
+        type: 'error',
+        text: `Failed to load locations: ${error.message}`
+      });
       setLocations([]);
       setLoading(false);
-      return;
     }
-    
-    // Extract locations from active access
-    const locationsList: Location[] = activeAccess
-      .map((access: LocationAccess, index: number) => {
-        console.log(`🔍 Processing access ${index + 1}:`, access);
-        
-        // Priority 1: location_detail (most complete)
-        if (access.location_detail) {
-          console.log(`✅ Found location_detail:`, access.location_detail);
-          return access.location_detail;
-        }
-        
-        // Priority 2: location as object
-        if (typeof access.location === 'object' && access.location !== null) {
-          console.log(`✅ Found location as object:`, access.location);
-          return access.location as Location;
-        }
-        
-        // Priority 3: location as ID (can't use directly)
-        if (typeof access.location === 'number') {
-          console.warn(`⚠️ Location is just an ID (${access.location}), cannot extract details`);
-          return null;
-        }
-        
-        console.warn("⚠️ No usable location data found in access record");
-        return null;
-      })
-      .filter((loc): loc is Location => {
-        if (loc === null) {
-          console.warn("⚠️ Filtered out null location");
-          return false;
-        }
-        console.log("✅ Valid location:", loc.name);
-        return true;
-      });
-    
-    console.log("📍 Final Extracted Locations:", locationsList);
-    console.log("📊 Total valid locations:", locationsList.length);
-    
-    if (locationsList.length === 0) {
-      console.error("❌ No valid locations extracted from access data");
-      setMessage({ 
-        type: 'error', 
-        text: 'Could not load location details. Please contact support.' 
-      });
-    }
-    
-    setLocations(locationsList);
-    
-    if (locationsList.length > 0) {
-      setSelectedLocation(locationsList[0]);
-      console.log("✅ Auto-selected first location:", locationsList[0].name);
-    }
-    
-    setLoading(false);
-    
-  } catch (error: any) {
-    console.error('❌ Error fetching locations:', error);
-    console.error('Error details:', {
-      message: error.message,
-      response: error.response,
-      stack: error.stack
-    });
-    
-    setMessage({ 
-      type: 'error', 
-      text: `Failed to load locations: ${error.message}` 
-    });
-    setLocations([]);
-    setLoading(false);
-  }
-};
+  };
   const fetchDocuments = async () => {
     if (!selectedLocation) return;
-    
+
     try {
       const response = await fetch(
         `${API_BASE}/documents/?location=${selectedLocation.id}`,
@@ -275,7 +276,7 @@ const fetchLocations = async () => {
           },
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         const docList = Array.isArray(data) ? data : data.results || [];
@@ -286,10 +287,35 @@ const fetchLocations = async () => {
     }
   };
 
+  // const fetchForms = async () => {
+  //   if (!selectedLocation) return;
+
+  //   try {
+  //     const response = await fetch(
+  //       `${API_BASE}/forms/?location=${selectedLocation.id}`,
+  //       {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       const formList = Array.isArray(data) ? data : data.results || [];
+  //       setForms(formList);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching forms:', error);
+  //   }
+  // };
+
   const fetchForms = async () => {
     if (!selectedLocation) return;
-    
+
     try {
+      console.log('🔍 Fetching forms for location:', selectedLocation.id);
+
       const response = await fetch(
         `${API_BASE}/forms/?location=${selectedLocation.id}`,
         {
@@ -298,20 +324,29 @@ const fetchLocations = async () => {
           },
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
+        console.log('📋 Raw forms response:', data);
+
         const formList = Array.isArray(data) ? data : data.results || [];
+        console.log('📋 Parsed forms list:', formList);
+        console.log('📊 Total forms fetched:', formList.length);
+
         setForms(formList);
+      } else {
+        console.error('❌ Failed to fetch forms:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Error details:', errorText);
       }
     } catch (error) {
-      console.error('Error fetching forms:', error);
+      console.error('❌ Error fetching forms:', error);
     }
   };
 
   const handleFileUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!uploadFile || !uploadSection) {
       setMessage({ type: 'error', text: 'Please select a file and section' });
       return;
@@ -341,10 +376,10 @@ const fetchLocations = async () => {
         setMessage({ type: 'success', text: 'Document uploaded successfully!' });
         setUploadFile(null);
         setUploadSection('');
-        
+
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        
+
         fetchDocuments();
         setActiveTab('documents');
       } else {
@@ -363,7 +398,7 @@ const fetchLocations = async () => {
       setMessage({ type: 'error', text: 'Please select a form section' });
       return;
     }
-    
+
     const section = formSections.find(s => s.value === newFormSection);
     if (!section) return;
 
@@ -388,7 +423,7 @@ const fetchLocations = async () => {
 
   const handleSaveForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedLocation) {
       setMessage({ type: 'error', text: 'No location selected' });
       return;
@@ -402,11 +437,19 @@ const fetchLocations = async () => {
     setSavingForm(true);
 
     try {
-      const url = editingForm 
+      const url = editingForm
         ? `${API_BASE}/forms/${editingForm.id}/`
         : `${API_BASE}/forms/`;
-      
+
       const method = editingForm ? 'PUT' : 'POST';
+
+      console.log('📝 Submitting form:', {
+        method,
+        url,
+        section: newFormSection,
+        location: selectedLocation.id,
+        data: formData
+      });
 
       const response = await fetch(url, {
         method,
@@ -421,21 +464,31 @@ const fetchLocations = async () => {
         }),
       });
 
+      console.log('📤 Form submission response status:', response.status);
+
       if (response.ok) {
-        setMessage({ 
-          type: 'success', 
-          text: editingForm ? 'Form updated successfully!' : 'Form submitted successfully!' 
+        const savedForm = await response.json();
+        console.log('✅ Form saved successfully:', savedForm);
+
+        setMessage({
+          type: 'success',
+          text: editingForm ? 'Form updated successfully!' : 'Form submitted successfully!'
         });
+
         setNewFormSection('');
         setFormData({});
         setEditingForm(null);
         setActiveTab('forms');
-        fetchForms();
+
+        // Refresh forms to show the newly submitted form
+        await fetchForms();
       } else {
-        const error = await response.json();
-        setMessage({ type: 'error', text: error.detail || 'Failed to save form' });
+        const errorData = await response.json();
+        console.error('❌ Form submission failed:', errorData);
+        setMessage({ type: 'error', text: errorData.detail || 'Failed to save form' });
       }
     } catch (error) {
+      console.error('❌ Form submission error:', error);
       setMessage({ type: 'error', text: 'Failed to save form. Please try again.' });
     } finally {
       setSavingForm(false);
@@ -474,7 +527,7 @@ const fetchLocations = async () => {
             required
           />
         );
-      
+
       case 'select':
         return (
           <select
@@ -491,7 +544,7 @@ const fetchLocations = async () => {
             ))}
           </select>
         );
-      
+
       case 'date':
         return (
           <input
@@ -502,7 +555,7 @@ const fetchLocations = async () => {
             required
           />
         );
-      
+
       default:
         return (
           <input
@@ -515,6 +568,13 @@ const fetchLocations = async () => {
         );
     }
   };
+  useEffect(() => {
+    if (selectedLocation) {
+      console.log('📍 Location changed, fetching data for:', selectedLocation.name);
+      fetchDocuments();
+      fetchForms();
+    }
+  }, [selectedLocation]);
 
   if (loading) {
     return (
@@ -598,9 +658,8 @@ const fetchLocations = async () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {message.text && (
-          <div className={`mb-6 p-4 rounded-lg flex items-center ${
-            message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
-          }`}>
+          <div className={`mb-6 p-4 rounded-lg flex items-center ${message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+            }`}>
             {message.type === 'success' ? (
               <CheckCircle className="w-5 h-5 mr-2" />
             ) : (
@@ -663,33 +722,30 @@ const fetchLocations = async () => {
                 <nav className="flex -mb-px overflow-x-auto">
                   <button
                     onClick={() => setActiveTab('documents')}
-                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
-                      activeTab === 'documents'
-                        ? 'border-b-2 border-blue-600 text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'documents'
+                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                      }`}
                   >
                     <FileText className="w-5 h-5 inline mr-2" />
                     Documents ({documents.length})
                   </button>
                   <button
                     onClick={() => setActiveTab('forms')}
-                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
-                      activeTab === 'forms'
-                        ? 'border-b-2 border-blue-600 text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'forms'
+                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                      }`}
                   >
                     <FileText className="w-5 h-5 inline mr-2" />
                     Forms ({forms.length})
                   </button>
                   <button
                     onClick={() => setActiveTab('upload')}
-                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
-                      activeTab === 'upload'
-                        ? 'border-b-2 border-blue-600 text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'upload'
+                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                      }`}
                   >
                     <Upload className="w-5 h-5 inline mr-2" />
                     Upload Document
@@ -701,11 +757,10 @@ const fetchLocations = async () => {
                       setFormData({});
                       setNewFormSection('');
                     }}
-                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${
-                      activeTab === 'create-form'
-                        ? 'border-b-2 border-blue-600 text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'create-form'
+                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                      }`}
                   >
                     <Plus className="w-5 h-5 inline mr-2" />
                     Create Form
@@ -756,7 +811,18 @@ const fetchLocations = async () => {
                               </div>
                               <div className="flex items-center space-x-2">
                                 <button
-                                  onClick={() => window.open(doc.file_url, '_blank')}
+                                  onClick={() => {
+                                    let fileUrl = doc.file_url;
+
+                                    // Only add .pdf extension for raw/PDF files
+                                    if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
+                                      fileUrl += '.pdf';
+                                    }
+
+                                    console.log('Opening document:', fileUrl);
+                                    console.log('Resource type:', doc.resource_type);
+                                    window.open(fileUrl, '_blank', 'noopener,noreferrer');
+                                  }}
                                   className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                   title="View"
                                 >
@@ -801,10 +867,10 @@ const fetchLocations = async () => {
                     ) : (
                       <div className="space-y-3">
                         {forms.map((form) => {
-                          const submittedBy = typeof form.submitted_by === 'object' 
-                            ? form.submitted_by 
+                          const submittedBy = typeof form.submitted_by === 'object'
+                            ? form.submitted_by
                             : { username: form.submitted_by, id: 0 };
-                          
+
                           return (
                             <div
                               key={form.id}
@@ -920,7 +986,7 @@ const fetchLocations = async () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       {editingForm ? 'Edit Form' : 'Create New Form'}
                     </h3>
-                    
+
                     <div className="mb-6">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Select Form Section
@@ -1013,7 +1079,7 @@ const fetchLocations = async () => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
                 <p className="text-sm text-gray-600">

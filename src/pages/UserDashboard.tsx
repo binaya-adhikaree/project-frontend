@@ -51,6 +51,7 @@ interface DocumentUpload {
   uploaded_at: string;
   locked: boolean;
   location: number;
+  resource_type: string
 }
 
 const getFormFields = (section: string) => {
@@ -155,32 +156,32 @@ export const UserDashboard = () => {
 
       const locRes = await api.get("/locations/", { headers });
       const locs = Array.isArray(locRes.data) ? locRes.data : locRes.data.results || [];
-    
+
       setLocations(locs);
 
       if (locs.length > 0 && !selectedLocation) {
         setSelectedLocation(locs[0]);
-      
+
       }
       if (isAdmin || isGastronom) {
         try {
           const usersRes = await api.get("/users/", { headers });
           const allUsers = Array.isArray(usersRes.data) ? usersRes.data : usersRes.data.results || [];
           const externals = allUsers.filter((u: any) => u.role === "EXTERNAL");
-        
+
           setExternalUsers(externals);
         } catch (err) {
           console.error("❌ Failed to fetch external users:", err);
         }
       }
 
-   
+
       const accessRes = await api.get("/location-access/", { headers });
       const accesses = Array.isArray(accessRes.data) ? accessRes.data : accessRes.data.results || [];
-    
+
       setLocationAccesses(accesses);
 
-   
+
       if ((isGastronom && externalUsers.length === 0) || isExternal) {
         const uniqueExternals = new Map();
         accesses.forEach((access: LocationAccess) => {
@@ -195,19 +196,19 @@ export const UserDashboard = () => {
         }
       }
 
-     
+
       const formsRes = await api.get("/forms/", { headers });
       const formList = Array.isArray(formsRes.data) ? formsRes.data : formsRes.data.results || [];
       console.log("📝 Forms fetched:", formList);
       setForms(formList);
 
-     
+
       const docsRes = await api.get("/documents/", { headers });
       const docList = Array.isArray(docsRes.data) ? docsRes.data : docsRes.data.results || [];
-     
+
       setDocuments(docList);
 
-      
+
 
     } catch (err) {
       console.error("❌ Failed to fetch data:", err);
@@ -226,7 +227,7 @@ export const UserDashboard = () => {
     }
 
 
-  
+
     const existingAccess = locationAccess.find(access => {
       const extUserId = typeof access.external_user === 'number'
         ? access.external_user
@@ -241,7 +242,7 @@ export const UserDashboard = () => {
     });
 
     if (existingAccess) {
-    
+
 
       if (existingAccess.is_active) {
         alert("⚠️ This external user already has active access to this location.");
@@ -293,7 +294,7 @@ export const UserDashboard = () => {
       setShowGrantAccessModal(false);
       setSelectedExternalUser("");
 
-      
+
       await fetchData(true);
 
     } catch (error: any) {
@@ -345,7 +346,7 @@ export const UserDashboard = () => {
       alert("✅ Access revoked successfully!");
       fetchData(true);
     } catch (err) {
-  
+
       alert("❌ Failed to revoke access");
     }
   };
@@ -389,7 +390,7 @@ export const UserDashboard = () => {
       setFormData({});
       fetchData(true);
     } catch (err: any) {
-    
+
       const errorMsg = err.response?.data?.detail || "Failed to submit form";
       alert(`❌ ${errorMsg}`);
     } finally {
@@ -410,7 +411,7 @@ export const UserDashboard = () => {
       });
 
       alert("✅ Document deleted successfully!");
-      fetchData(true); 
+      fetchData(true);
     } catch (err: any) {
 
       const errorMsg = err.response?.data?.detail || "Failed to delete document";
@@ -453,7 +454,7 @@ export const UserDashboard = () => {
       setShowDocumentModal(false);
       setDocumentSection("");
       setDocumentFile(null);
-      fetchData(true); 
+      fetchData(true);
     } catch (err: any) {
       console.error("Failed to upload document:", err);
       let errorMsg = "Failed to upload document";
@@ -515,7 +516,7 @@ export const UserDashboard = () => {
   const locationForms = forms.filter(f => f.location === selectedLocation?.id);
   const locationDocuments = documents.filter(d => d.location === selectedLocation?.id);
   const locationAccess = locationAccesses.filter(a => {
-    
+
     const locationId = typeof a.location === 'number'
       ? a.location
       : a.location?.id;
@@ -992,11 +993,14 @@ export const UserDashboard = () => {
                                 <button
                                   onClick={() => {
                                     let fileUrl = doc.file_url;
-                                    if (!fileUrl.endsWith('.pdf')) {
+
+                                    // Only add .pdf extension for raw/PDF files
+                                    if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
                                       fileUrl += '.pdf';
                                     }
 
                                     console.log('Opening document:', fileUrl);
+                                    console.log('Resource type:', doc.resource_type);
                                     window.open(fileUrl, '_blank', 'noopener,noreferrer');
                                   }}
                                   className="p-2 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200 hover:border-blue-400"
@@ -1215,8 +1219,8 @@ export const UserDashboard = () => {
                                 <td className="p-4 border-b">
                                   <span
                                     className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${access.is_active
-                                        ? "bg-green-100 text-green-800"
-                                        : "bg-red-100 text-red-800"
+                                      ? "bg-green-100 text-green-800"
+                                      : "bg-red-100 text-red-800"
                                       }`}
                                   >
                                     {access.is_active ? (

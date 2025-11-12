@@ -38,6 +38,7 @@ interface Document {
   location: number;
   locked: boolean;
   uploaded_at: string;
+  resource_type:string
 }
 
 interface FormSubmission {
@@ -105,10 +106,10 @@ const getUsername = (user: string | { username: string; first_name?: string; las
 
 const getFileNameFromUrl = (url: string): string => {
   try {
-    // Extract filename from Cloudinary URL
+ 
     const parts = url.split('/');
     const filename = parts[parts.length - 1];
-    // Decode URI component to handle special characters
+   
     return decodeURIComponent(filename);
   } catch {
     return 'document.pdf';
@@ -123,13 +124,12 @@ export const AdminDashboard = () => {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Location Detail View
+
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [locationDocuments, setLocationDocuments] = useState<Document[]>([]);
   const [locationForms, setLocationForms] = useState<FormSubmission[]>([]);
   const [loadingLocationDetail, setLoadingLocationDetail] = useState(false);
 
-  // User form states
   const [newUser, setNewUser] = useState({
     username: "",
     first_name: "",
@@ -146,7 +146,7 @@ export const AdminDashboard = () => {
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [editingUser, setEditingUser] = useState<any>({});
 
-  // Location form states
+
   const [newLocation, setNewLocation] = useState({
     name: "",
     address: "",
@@ -158,12 +158,12 @@ export const AdminDashboard = () => {
   const [editingLocationId, setEditingLocationId] = useState<number | null>(null);
   const [editingLocation, setEditingLocation] = useState<any>({});
 
-  // Assign operator modal
+ 
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assigningLocationId, setAssigningLocationId] = useState<number | null>(null);
   const [selectedOperatorId, setSelectedOperatorId] = useState("");
 
-  // View/Edit form modals
+  
   const [viewingForm, setViewingForm] = useState<FormSubmission | null>(null);
   const [editingForm, setEditingForm] = useState<FormSubmission | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
@@ -355,7 +355,6 @@ export const AdminDashboard = () => {
       alert("❌ Failed to delete form");
     }
   };
-
 
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -637,7 +636,7 @@ export const AdminDashboard = () => {
           <>
 
             <div className="mb-8 bg-white border rounded-2xl shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+              <div className="bg-linear-to-r from-blue-500 to-indigo-600 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <FileText className="w-6 h-6" />
                   Form Submissions ({locationForms.length})
@@ -670,8 +669,8 @@ export const AdminDashboard = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${form.locked
-                                ? "bg-red-100 text-red-800"
-                                : "bg-green-100 text-green-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-green-100 text-green-800"
                               }`}
                           >
                             {form.locked ? (
@@ -703,8 +702,8 @@ export const AdminDashboard = () => {
                           <button
                             onClick={() => handleToggleFormLock(form.id)}
                             className={`p-2 rounded-lg transition-colors ${form.locked
-                                ? "hover:bg-green-100"
-                                : "hover:bg-orange-100"
+                              ? "hover:bg-green-100"
+                              : "hover:bg-orange-100"
                               }`}
                             title={form.locked ? "Unlock Form" : "Lock Form"}
                           >
@@ -731,7 +730,7 @@ export const AdminDashboard = () => {
 
 
             <div className="bg-white border rounded-2xl shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6">
+              <div className="bg-linear-to-r from-purple-500 to-pink-600 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <UploadIcon className="w-6 h-6" />
                   Documents ({locationDocuments.length})
@@ -767,8 +766,8 @@ export const AdminDashboard = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${doc.locked
-                                ? "bg-red-100 text-red-800"
-                                : "bg-green-100 text-green-800"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-green-100 text-green-800"
                               }`}
                           >
                             {doc.locked ? (
@@ -783,21 +782,30 @@ export const AdminDashboard = () => {
                               </>
                             )}
                           </span>
-                          <a
-                            href={doc.file_url.endsWith('.pdf') ? doc.file_url : `${doc.file_url}.pdf`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={() => {
+                              let fileUrl = doc.file_url;
+
+                              // Only add .pdf extension for raw/PDF files, not images
+                              if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
+                                fileUrl += '.pdf';
+                              }
+
+                              console.log('Opening document:', fileUrl);
+                              console.log('Resource type:', doc.resource_type);
+                              window.open(fileUrl, '_blank', 'noopener,noreferrer');
+                            }}
                             className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
                             title="View Document"
                           >
                             <Eye className="w-5 h-5 text-blue-600" />
-                          </a>
+                          </button>
 
                           <button
                             onClick={() => handleToggleDocumentLock(doc.id)}
                             className={`p-2 rounded-lg transition-colors ${doc.locked
-                                ? "hover:bg-green-100"
-                                : "hover:bg-orange-100"
+                              ? "hover:bg-green-100"
+                              : "hover:bg-orange-100"
                               }`}
                             title={doc.locked ? "Unlock Document" : "Lock Document"}
                           >
@@ -1019,7 +1027,7 @@ export const AdminDashboard = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      {/* Header */}
+    
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">🔧 Admin Dashboard</h1>
         <p className="text-gray-600">
@@ -1027,13 +1035,13 @@ export const AdminDashboard = () => {
         </p>
       </div>
 
-      {/* Tabs */}
+     
       <div className="flex space-x-2 mb-6 border-b">
         <button
           onClick={() => setActiveTab("users")}
           className={`px-6 py-3 font-semibold transition-all ${activeTab === "users"
-              ? "border-b-4 border-yellow-500 text-yellow-600"
-              : "text-gray-500 hover:text-gray-700"
+            ? "border-b-4 border-yellow-500 text-yellow-600"
+            : "text-gray-500 hover:text-gray-700"
             }`}
         >
           👥 User Management
@@ -1041,8 +1049,8 @@ export const AdminDashboard = () => {
         <button
           onClick={() => setActiveTab("locations")}
           className={`px-6 py-3 font-semibold transition-all ${activeTab === "locations"
-              ? "border-b-4 border-yellow-500 text-yellow-600"
-              : "text-gray-500 hover:text-gray-700"
+            ? "border-b-4 border-yellow-500 text-yellow-600"
+            : "text-gray-500 hover:text-gray-700"
             }`}
         >
           📍 Location Management
@@ -1180,10 +1188,10 @@ export const AdminDashboard = () => {
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                              ? "bg-red-100 text-red-800"
-                              : u.role === "GASTRONOM"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
+                            ? "bg-red-100 text-red-800"
+                            : u.role === "GASTRONOM"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
                             }`}
                         >
                           {u.role}
