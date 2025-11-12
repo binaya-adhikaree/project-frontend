@@ -227,7 +227,6 @@ export const UserDashboard = () => {
     }
 
 
-
     const existingAccess = locationAccess.find(access => {
       const extUserId = typeof access.external_user === 'number'
         ? access.external_user
@@ -276,7 +275,7 @@ export const UserDashboard = () => {
         location: Number(selectedLocation.id)
       };
 
-       await api.post("/location-access/", payload, {
+      await api.post("/location-access/", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
