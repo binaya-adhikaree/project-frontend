@@ -60,15 +60,14 @@ export const SubscriptionBanner = ({
 
 
 export const useSubscriptionStatus = () => {
-
-  const [subscription, setSubscription] = useState<{
+  const [subscription] = useState<{
     status: string;
     canUpload: boolean;
   } | null>(null);
 
   const checkSubscription = async () => {
     try {
-   
+      // TODO: Implement subscription check when API is ready
     } catch (error) {
       console.error("Failed to fetch subscription", error);
     }

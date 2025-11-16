@@ -682,6 +682,7 @@ export const UserDashboard = () => {
                 <MapPin className="w-6 h-6 text-amber-600" />
                 {isGastronom ? "Ihr Restaurantstandort" : "Standortdetails"}
               </h2>
+              {loadingSubscription ? "" : ""}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white rounded-lg p-4 shadow-sm">
                   <p className="text-sm text-gray-600 mb-1">Restaurantname</p>
