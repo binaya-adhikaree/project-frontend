@@ -58,7 +58,6 @@ export const SubscriptionBanner = ({
   );
 };
 
-
 export const useSubscriptionStatus = () => {
   const [subscription] = useState<{
     status: string;
@@ -67,7 +66,7 @@ export const useSubscriptionStatus = () => {
 
   const checkSubscription = async () => {
     try {
-      // TODO: Implement subscription check when API is ready
+   
     } catch (error) {
       console.error("Failed to fetch subscription", error);
     }

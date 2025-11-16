@@ -1,28 +1,13 @@
-import { useState } from "react";
+import { Mail, Phone } from "lucide-react";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const recipientEmail = "your-email@gmail.com"; // Replace with your actual email
+  const subject = "Contact from Website";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleContactClick = () => {
+    
+    const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}`;
+    window.location.href = mailtoLink;
   };
 
   return (
@@ -32,83 +17,42 @@ export default function Contact() {
           <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
 
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Your name"
-                />
+            <div className="text-center space-y-6">
+              <div className="flex justify-center">
+                <Mail className="w-16 h-16 text-indigo-600" />
               </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="How can we help?"
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={6}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Your message..."
-                />
-              </div>
+              
+              <h2 className="text-2xl font-bold text-gray-900">
+                Get in Touch
+              </h2>
+              
+              <p className="text-gray-600 max-w-md mx-auto">
+                Have questions or need assistance? Click the button below to send us an email directly.
+              </p>
 
               <button
-                type="submit"
-                className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+                onClick={handleContactClick}
+                className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition inline-flex items-center gap-2"
               >
-                Send Message
+                <Mail className="w-5 h-5" />
+                Send Email
               </button>
-            </form>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold mb-2">Email</h3>
-              <p className="text-gray-600">support@example.com</p>
+              <div className="flex items-center gap-3 mb-2">
+                <Mail className="w-6 h-6 text-indigo-600" />
+                <h3 className="text-xl font-bold">Email</h3>
+              </div>
+              <p className="text-gray-600">{recipientEmail}</p>
             </div>
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold mb-2">Phone</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <Phone className="w-6 h-6 text-indigo-600" />
+                <h3 className="text-xl font-bold">Phone</h3>
+              </div>
               <p className="text-gray-600">+1 (555) 123-4567</p>
             </div>
           </div>
