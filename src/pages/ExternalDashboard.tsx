@@ -85,58 +85,58 @@ const ExternalDashboard: React.FC = () => {
   const API_BASE = import.meta.env.VITE_BASE_URL
 
   const documentSections = [
-    { value: "2.4", label: "2.4 - Maintenance certificate" },
-    { value: "3.5", label: "3.5 - Waste removal record" },
-    { value: "3.6", label: "3.6 - Inspection report (General inspection)" },
-    { value: "3.7", label: "3.7 - Record of cleaning and detergents used" },
+    { value: "2.4", label: "2.4 - Wartungszertifikat" },
+    { value: "3.5", label: "3.5 - Abfallentsorgungsnachweis" },
+    { value: "3.6", label: "3.6 - Inspektionsbericht (Allgemeine Inspektion)" },
+    { value: "3.7", label: "3.7 - Aufzeichnung der Reinigung und verwendeten Reinigungsmittel" },
   ];
 
   const formSections = [
     {
       value: "3.1",
-      label: "3.1 - Proof of disposal, maintenance, and inspection",
+      label: "3.1 - Nachweis über Entsorgung, Wartung und Inspektion",
       fields: [
-        { name: "disposal_date", label: "Disposal Date", type: "date" },
-        { name: "disposal_method", label: "Disposal Method", type: "text" },
-        { name: "maintenance_performed", label: "Maintenance Performed", type: "textarea" },
-        { name: "inspection_notes", label: "Inspection Notes", type: "textarea" },
-        { name: "inspector_name", label: "Inspector Name", type: "text" },
+        { name: "disposal_date", label: "Entsorgungsdatum", type: "date" },
+        { name: "disposal_method", label: "Entsorgungsmethode", type: "text" },
+        { name: "maintenance_performed", label: "Durchgeführte Wartung", type: "textarea" },
+        { name: "inspection_notes", label: "Inspektionsnotizen", type: "textarea" },
+        { name: "inspector_name", label: "Name des Prüfers", type: "text" },
       ]
     },
     {
       value: "3.2",
-      label: "3.2 - Disposal and self-inspection report",
+      label: "3.2 - Entsorgungs- und Selbstinspektionsbericht",
       fields: [
-        { name: "inspection_date", label: "Inspection Date", type: "date" },
-        { name: "disposal_items", label: "Items Disposed", type: "textarea" },
-        { name: "self_inspection_result", label: "Self-Inspection Result", type: "select", options: ["Pass", "Fail", "Needs Attention"] },
-        { name: "findings", label: "Findings", type: "textarea" },
-        { name: "corrective_actions", label: "Corrective Actions Taken", type: "textarea" },
+        { name: "inspection_date", label: "Inspektionsdatum", type: "date" },
+        { name: "disposal_items", label: "Entsorgte Gegenstände", type: "textarea" },
+        { name: "self_inspection_result", label: "Ergebnis der Selbstinspektion", type: "select", options: ["Bestanden", "Nicht bestanden", "Benötigt Aufmerksamkeit"] },
+        { name: "findings", label: "Feststellungen", type: "textarea" },
+        { name: "corrective_actions", label: "Ergriffene Korrekturmaßnahmen", type: "textarea" },
       ]
     },
     {
       value: "3.3",
-      label: "3.3 - Maintenance report",
+      label: "3.3 - Wartungsbericht",
       fields: [
-        { name: "maintenance_date", label: "Maintenance Date", type: "date" },
-        { name: "equipment_serviced", label: "Equipment Serviced", type: "text" },
-        { name: "work_performed", label: "Work Performed", type: "textarea" },
-        { name: "parts_replaced", label: "Parts Replaced", type: "textarea" },
-        { name: "next_maintenance_due", label: "Next Maintenance Due", type: "date" },
-        { name: "technician_name", label: "Technician Name", type: "text" },
+        { name: "maintenance_date", label: "Wartungsdatum", type: "date" },
+        { name: "equipment_serviced", label: "Wartungsgeräte", type: "text" },
+        { name: "work_performed", label: "Durchgeführte Arbeiten", type: "textarea" },
+        { name: "parts_replaced", label: "Ersetzte Teile", type: "textarea" },
+        { name: "next_maintenance_due", label: "Nächster Wartungstermin", type: "date" },
+        { name: "technician_name", label: "Name des Technikers", type: "text" },
       ]
     },
     {
       value: "3.4",
-      label: "3.4 - Report of defects and repairs",
+      label: "3.4 - Bericht über Mängel und Reparaturen",
       fields: [
-        { name: "defect_reported_date", label: "Defect Reported Date", type: "date" },
-        { name: "defect_description", label: "Defect Description", type: "textarea" },
-        { name: "severity", label: "Severity", type: "select", options: ["Low", "Medium", "High", "Critical"] },
-        { name: "repair_date", label: "Repair Date", type: "date" },
-        { name: "repair_description", label: "Repair Description", type: "textarea" },
-        { name: "repaired_by", label: "Repaired By", type: "text" },
-        { name: "status", label: "Status", type: "select", options: ["Pending", "In Progress", "Completed"] },
+        { name: "defect_reported_date", label: "Datum der Meldung des Mangels", type: "date" },
+        { name: "defect_description", label: "Mängelbeschreibung", type: "textarea" },
+        { name: "severity", label: "Schweregrad", type: "select", options: ["Gering", "Mittel", "Hoch", "Kritisch"] },
+        { name: "repair_date", label: "Reparaturdatum", type: "date" },
+        { name: "repair_description", label: "Reparaturbeschreibung", type: "textarea" },
+        { name: "repaired_by", label: "Repariert von", type: "text" },
+        { name: "status", label: "Status", type: "select", options: ["Ausstehend", "In Bearbeitung", "Abgeschlossen"] },
       ]
     },
   ];
@@ -287,28 +287,6 @@ const ExternalDashboard: React.FC = () => {
     }
   };
 
-  // const fetchForms = async () => {
-  //   if (!selectedLocation) return;
-
-  //   try {
-  //     const response = await fetch(
-  //       `${API_BASE}/forms/?location=${selectedLocation.id}`,
-  //       {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       const formList = Array.isArray(data) ? data : data.results || [];
-  //       setForms(formList);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching forms:', error);
-  //   }
-  // };
 
   const fetchForms = async () => {
     if (!selectedLocation) return;
@@ -581,7 +559,7 @@ const ExternalDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <p className="text-gray-600">Ihr Dashboard wird geladen…</p>
         </div>
       </div>
     );
@@ -594,13 +572,13 @@ const ExternalDashboard: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">External Dashboard</h1>
-                <p className="text-sm text-gray-600 mt-1">Welcome, {user.first_name || user.username}!</p>
+                <h1 className="text-2xl font-bold text-gray-900">Externes Dashboard</h1>
+                <p className="text-sm text-gray-600 mt-1">Willkommen, {user.first_name || user.username}!</p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="text-right">
                   <p className="text-sm font-medium text-gray-700">{user.company_name}</p>
-                  <p className="text-xs text-gray-500">External User</p>
+                  <p className="text-xs text-gray-500">Externer Benutzer</p>
                 </div>
               </div>
             </div>
@@ -610,24 +588,24 @@ const ExternalDashboard: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-8 text-center">
             <AlertCircle className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-800 mb-3">No Locations Assigned</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-3">Keine Standorte zugewiesen</h2>
             <p className="text-gray-600 mb-6">
-              You haven't been granted access to any locations yet.
+              Sie haben noch keinen Zugriff auf Standorte erhalten.
             </p>
             <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-sm text-gray-700 mb-4">To get started:</p>
+              <p className="text-sm text-gray-700 mb-4">Um zu beginnen:</p>
               <ol className="text-left text-sm text-gray-600 space-y-2">
                 <li className="flex items-start">
                   <span className="font-semibold mr-2">1.</span>
-                  <span>Contact the Gastronom (location operator) or administrator</span>
+                  <span>Kontaktieren Sie den Gastronom (Standortbetreiber) oder Administrator</span>
                 </li>
                 <li className="flex items-start">
                   <span className="font-semibold mr-2">2.</span>
-                  <span>Request access to specific locations</span>
+                  <span>Zugriff auf bestimmte Standorte anfordern</span>
                 </li>
                 <li className="flex items-start">
                   <span className="font-semibold mr-2">3.</span>
-                  <span>Once granted, you'll be able to view and upload documents</span>
+                  <span>Sobald der Zugriff gewährt wurde, können Sie Dokumente ansehen und hochladen.</span>
                 </li>
               </ol>
             </div>
@@ -643,13 +621,13 @@ const ExternalDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">External Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Externes Dashboard</h1>
               <p className="text-sm text-gray-600 mt-1">Welcome, {user.first_name || user.username}!</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-700">{user.company_name}</p>
-                <p className="text-xs text-gray-500">External User • {locations.length} Location{locations.length !== 1 ? 's' : ''}</p>
+                <p className="text-xs text-gray-500">Externer Benutzer • {locations.length} Standort{locations.length !== 1 ? 's' : ''}</p>
               </div>
             </div>
           </div>
@@ -678,7 +656,7 @@ const ExternalDashboard: React.FC = () => {
         {locations.length > 1 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Location
+              Standort auswählen
             </label>
             <select
               value={selectedLocation?.id || ''}
@@ -699,7 +677,7 @@ const ExternalDashboard: React.FC = () => {
 
         {selectedLocation && (
           <>
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm p-6 mb-6 border border-blue-200">
+            <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm p-6 mb-6 border border-blue-200">
               <div className="flex items-start">
                 <Building2 className="w-6 h-6 text-blue-600 mt-1 mr-3" />
                 <div className="flex-1">
@@ -710,7 +688,7 @@ const ExternalDashboard: React.FC = () => {
                   </p>
                   {selectedLocation.location_id && (
                     <p className="text-xs text-gray-500 mt-2">
-                      Location ID: {selectedLocation.location_id}
+                      Standort-ID: {selectedLocation.location_id}
                     </p>
                   )}
                 </div>
@@ -728,7 +706,7 @@ const ExternalDashboard: React.FC = () => {
                       }`}
                   >
                     <FileText className="w-5 h-5 inline mr-2" />
-                    Documents ({documents.length})
+                    Dokumente({documents.length})
                   </button>
                   <button
                     onClick={() => setActiveTab('forms')}
@@ -738,7 +716,7 @@ const ExternalDashboard: React.FC = () => {
                       }`}
                   >
                     <FileText className="w-5 h-5 inline mr-2" />
-                    Forms ({forms.length})
+                    Formulare ({forms.length})
                   </button>
                   <button
                     onClick={() => setActiveTab('upload')}
@@ -748,7 +726,7 @@ const ExternalDashboard: React.FC = () => {
                       }`}
                   >
                     <Upload className="w-5 h-5 inline mr-2" />
-                    Upload Document
+                    Dokument hochladen
                   </button>
                   <button
                     onClick={() => {
@@ -763,7 +741,7 @@ const ExternalDashboard: React.FC = () => {
                       }`}
                   >
                     <Plus className="w-5 h-5 inline mr-2" />
-                    Create Form
+                    Formular erstellen
                   </button>
                 </nav>
               </div>
@@ -771,16 +749,16 @@ const ExternalDashboard: React.FC = () => {
               <div className="p-6">
                 {activeTab === 'documents' && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Documents</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Dokumente</h3>
                     {documents.length === 0 ? (
                       <div className="text-center py-12 bg-gray-50 rounded-lg">
                         <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 text-lg mb-2">No documents uploaded yet.</p>
+                        <p className="text-gray-500 text-lg mb-2">Noch keine Dokumente hochgeladen.</p>
                         <button
                           onClick={() => setActiveTab('upload')}
                           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                         >
-                          Upload Your First Document
+                          Laden Sie Ihr erstes Dokument hoch
                         </button>
                       </div>
                     ) : (
@@ -814,7 +792,7 @@ const ExternalDashboard: React.FC = () => {
                                   onClick={() => {
                                     let fileUrl = doc.file_url;
 
-                                    // Only add .pdf extension for raw/PDF files
+
                                     if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
                                       fileUrl += '.pdf';
                                     }
@@ -847,11 +825,11 @@ const ExternalDashboard: React.FC = () => {
 
                 {activeTab === 'forms' && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Form Submissions</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Formularübermittlungen</h3>
                     {forms.length === 0 ? (
                       <div className="text-center py-12 bg-gray-50 rounded-lg">
                         <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 text-lg mb-2">No forms submitted yet.</p>
+                        <p className="text-gray-500 text-lg mb-2">Noch keine Formulare eingereicht.</p>
                         <button
                           onClick={() => {
                             setActiveTab('create-form');
@@ -861,7 +839,7 @@ const ExternalDashboard: React.FC = () => {
                           }}
                           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                         >
-                          Create Your First Form
+                          Erstellen Sie Ihr erstes Formular
                         </button>
                       </div>
                     ) : (
@@ -888,7 +866,7 @@ const ExternalDashboard: React.FC = () => {
                                     )}
                                   </div>
                                   <p className="text-xs text-gray-500 mt-1">
-                                    Submitted by {submittedBy.username} on{' '}
+                                    Eingereicht von {submittedBy.username} on{' '}
                                     {new Date(form.submitted_at).toLocaleDateString()}
                                   </p>
                                 </div>
@@ -921,11 +899,11 @@ const ExternalDashboard: React.FC = () => {
 
                 {activeTab === 'upload' && (
                   <div className="max-w-2xl">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Document</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Dokument hochladen</h3>
                     <form onSubmit={handleFileUpload} className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Select Section
+                          Abschnitt auswählen
                         </label>
                         <select
                           value={uploadSection}
@@ -944,7 +922,7 @@ const ExternalDashboard: React.FC = () => {
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Select File
+                          Datei auswählen
                         </label>
                         <input
                           type="file"
@@ -954,17 +932,17 @@ const ExternalDashboard: React.FC = () => {
                           required
                         />
                         <p className="text-xs text-gray-500 mt-1">
-                          Allowed: PDF, Images, Word documents (Max 10MB)
+                          Zulässig: PDF, Bilder, Word-Dokumente (max. 10 MB)
                         </p>
                       </div>
 
                       {uploadFile && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                           <p className="text-sm text-gray-700">
-                            <strong>Selected:</strong> {uploadFile.name}
+                            <strong>Ausgewählt:</strong> {uploadFile.name}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
-                            Size: {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
+                            Größe: {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
                       )}
@@ -989,7 +967,7 @@ const ExternalDashboard: React.FC = () => {
 
                     <div className="mb-6">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Select Form Section
+                        Formularbereich auswählen
                       </label>
                       <select
                         value={newFormSection}
@@ -1015,7 +993,7 @@ const ExternalDashboard: React.FC = () => {
                         onClick={handleCreateForm}
                         className="mb-6 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
                       >
-                        Initialize Form Fields
+                        Formularfelder initialisieren
                       </button>
                     )}
 
@@ -1052,7 +1030,7 @@ const ExternalDashboard: React.FC = () => {
                             className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center"
                           >
                             <X className="w-5 h-5 mr-2" />
-                            Cancel
+                            Abbrechen
                           </button>
                         </div>
                       </form>
@@ -1083,15 +1061,15 @@ const ExternalDashboard: React.FC = () => {
             <div className="p-6 space-y-4">
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
                 <p className="text-sm text-gray-600">
-                  <strong>Submitted by:</strong> {typeof viewingForm.submitted_by === 'object' ? viewingForm.submitted_by.username : viewingForm.submitted_by}
+                  <strong>Eingereicht von:</strong> {typeof viewingForm.submitted_by === 'object' ? viewingForm.submitted_by.username : viewingForm.submitted_by}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Submitted on:</strong> {new Date(viewingForm.submitted_at).toLocaleString()}
+                  <strong>Eingereicht am:</strong> {new Date(viewingForm.submitted_at).toLocaleString()}
                 </p>
                 {viewingForm.locked && (
                   <p className="text-sm text-amber-600 flex items-center mt-2">
                     <Lock className="w-4 h-4 mr-1" />
-                    This form is locked and cannot be edited
+                    Dieses Formular ist gesperrt und kann nicht bearbeitet werden
                   </p>
                 )}
               </div>

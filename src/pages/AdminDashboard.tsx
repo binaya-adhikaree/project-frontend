@@ -38,7 +38,7 @@ interface Document {
   location: number;
   locked: boolean;
   uploaded_at: string;
-  resource_type:string
+  resource_type: string
 }
 
 interface FormSubmission {
@@ -54,45 +54,46 @@ interface FormSubmission {
 const getFormFields = (section: string) => {
   const formConfigs: Record<string, any[]> = {
     "3.1": [
-      { name: "disposal_company", label: "Disposal Company Name", type: "text" },
-      { name: "disposal_date", label: "Last Disposal Date", type: "date" },
-      { name: "maintenance_company", label: "Maintenance Company", type: "text" },
-      { name: "maintenance_date", label: "Last Maintenance Date", type: "date" },
-      { name: "inspection_company", label: "Inspection Company", type: "text" },
-      { name: "inspection_date", label: "Last Inspection Date", type: "date" },
-      { name: "notes", label: "Additional Notes", type: "textarea" },
+      { name: "disposal_company", label: "Name des Entsorgungsunternehmens", type: "text" },
+      { name: "disposal_date", label: "Letztes Entsorgungsdatum", type: "date" },
+      { name: "maintenance_company", label: "Wartungsunternehmen", type: "text" },
+      { name: "maintenance_date", label: "Letztes Wartungsdatum", type: "date" },
+      { name: "inspection_company", label: "Inspektionsunternehmen", type: "text" },
+      { name: "inspection_date", label: "Letztes Inspektionsdatum", type: "date" },
+      { name: "notes", label: "Zusätzliche Anmerkungen", type: "textarea" },
     ],
     "3.2": [
-      { name: "disposal_method", label: "Disposal Method", type: "select", options: ["Regular Collection", "Special Disposal", "Recycling", "Other"] },
-      { name: "disposal_frequency", label: "Disposal Frequency", type: "select", options: ["Daily", "Weekly", "Bi-weekly", "Monthly"] },
-      { name: "waste_types", label: "Waste Types", type: "text" },
-      { name: "self_inspection_date", label: "Self-Inspection Date", type: "date" },
-      { name: "inspector_name", label: "Inspector Name", type: "text" },
-      { name: "defects_found", label: "Defects Found", type: "select", options: ["None", "Minor", "Major"] },
-      { name: "corrective_actions", label: "Corrective Actions Taken", type: "textarea" },
+      { name: "disposal_method", label: "Entsorgungsmethode", type: "select", options: ["Reguläre Abholung", "Sonderentsorgung", "Recycling", "Andere"] },
+      { name: "disposal_frequency", label: "Entsorgungsfrequenz", type: "select", options: ["Täglich", "Wöchentlich", "Alle zwei Wochen", "Monatlich"] },
+      { name: "waste_types", label: "Abfallarten", type: "text" },
+      { name: "self_inspection_date", label: "Selbstinspektionsdatum", type: "date" },
+      { name: "inspector_name", label: "Name des Inspektors", type: "text" },
+      { name: "defects_found", label: "Gefundene Mängel", type: "select", options: ["Keine", "Geringfügig", "Erheblich"] },
+      { name: "corrective_actions", label: "Ergriffene Korrekturmaßnahmen", type: "textarea" },
     ],
     "3.3": [
-      { name: "equipment_name", label: "Equipment/System Name", type: "text" },
-      { name: "maintenance_type", label: "Maintenance Type", type: "select", options: ["Preventive", "Corrective", "Emergency", "Routine"] },
-      { name: "technician_name", label: "Technician Name", type: "text" },
-      { name: "company_name", label: "Service Company", type: "text" },
-      { name: "maintenance_date", label: "Maintenance Date", type: "date" },
-      { name: "work_performed", label: "Work Performed", type: "textarea" },
-      { name: "parts_replaced", label: "Parts Replaced", type: "text" },
-      { name: "next_maintenance_due", label: "Next Maintenance Due", type: "date" },
+      { name: "equipment_name", label: "Name des Geräts/Systems", type: "text" },
+      { name: "maintenance_type", label: "Wartungsart", type: "select", options: ["Präventiv", "Korrektiv", "Notfall", "Routine"] },
+      { name: "technician_name", label: "Name des Technikers", type: "text" },
+      { name: "company_name", label: "Serviceunternehmen", type: "text" },
+      { name: "maintenance_date", label: "Wartungsdatum", type: "date" },
+      { name: "work_performed", label: "Durchgeführte Arbeiten", type: "textarea" },
+      { name: "parts_replaced", label: "Ausgetauschte Teile", type: "text" },
+      { name: "next_maintenance_due", label: "Nächster Wartungstermin", type: "date" },
     ],
     "3.4": [
-      { name: "defect_description", label: "Defect Description", type: "textarea" },
-      { name: "defect_location", label: "Location of Defect", type: "text" },
-      { name: "severity", label: "Severity Level", type: "select", options: ["Low", "Medium", "High", "Critical"] },
-      { name: "detected_date", label: "Date Detected", type: "date" },
-      { name: "detected_by", label: "Detected By", type: "text" },
-      { name: "repair_date", label: "Repair Date", type: "date" },
-      { name: "repaired_by", label: "Repaired By", type: "text" },
-      { name: "repair_description", label: "Repair Description", type: "textarea" },
-      { name: "status", label: "Status", type: "select", options: ["Pending", "In Progress", "Completed"] },
+      { name: "defect_description", label: "Fehlerbeschreibung", type: "textarea" },
+      { name: "defect_location", label: "Ort des Fehlers", type: "text" },
+      { name: "severity", label: "Schweregrad", type: "select", options: ["Niedrig", "Mittel", "Hoch", "Kritisch"] },
+      { name: "detected_date", label: "Erfassungsdatum", type: "date" },
+      { name: "detected_by", label: "Erfasst von", type: "text" },
+      { name: "repair_date", label: "Reparaturdatum", type: "date" },
+      { name: "repaired_by", label: "Repariert von", type: "text" },
+      { name: "repair_description", label: "Reparaturbeschreibung", type: "textarea" },
+      { name: "status", label: "Status", type: "select", options: ["Ausstehend", "In Bearbeitung", "Abgeschlossen"] },
     ],
   };
+
   return formConfigs[section] || [];
 };
 
@@ -106,10 +107,10 @@ const getUsername = (user: string | { username: string; first_name?: string; las
 
 const getFileNameFromUrl = (url: string): string => {
   try {
- 
+
     const parts = url.split('/');
     const filename = parts[parts.length - 1];
-   
+
     return decodeURIComponent(filename);
   } catch {
     return 'document.pdf';
@@ -158,12 +159,12 @@ export const AdminDashboard = () => {
   const [editingLocationId, setEditingLocationId] = useState<number | null>(null);
   const [editingLocation, setEditingLocation] = useState<any>({});
 
- 
+
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assigningLocationId, setAssigningLocationId] = useState<number | null>(null);
   const [selectedOperatorId, setSelectedOperatorId] = useState("");
 
-  
+
   const [viewingForm, setViewingForm] = useState<FormSubmission | null>(null);
   const [editingForm, setEditingForm] = useState<FormSubmission | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
@@ -596,7 +597,7 @@ export const AdminDashboard = () => {
           className="mb-6 flex items-center gap-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Locations
+          Zurück zu den Standorten
         </button>
 
 
@@ -630,7 +631,7 @@ export const AdminDashboard = () => {
         {loadingLocationDetail ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading location details...</p>
+            <p className="text-gray-600">Lade Standortdetails…</p>
           </div>
         ) : (
           <>
@@ -639,13 +640,13 @@ export const AdminDashboard = () => {
               <div className="bg-linear-to-r from-blue-500 to-indigo-600 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <FileText className="w-6 h-6" />
-                  Form Submissions ({locationForms.length})
+                  Formularübermittlungen ({locationForms.length})
                 </h2>
               </div>
               {locationForms.length === 0 ? (
                 <div className="p-12 text-center">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-500 text-lg">No form submissions found for this location.</p>
+                  <p className="text-gray-500 text-lg">Für diesen Standort wurden keine Formularübermittlungen gefunden.</p>
                 </div>
               ) : (
                 <div className="p-6 space-y-4">
@@ -659,10 +660,10 @@ export const AdminDashboard = () => {
                           <h3 className="text-xl font-bold text-gray-800 mb-2">{form.section}</h3>
                           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                             <span>
-                              <strong>Submitted by:</strong> {getUsername(form.submitted_by)}
+                              <strong>Eingereicht von:</strong> {getUsername(form.submitted_by)}
                             </span>
                             <span>
-                              <strong>Date:</strong> {new Date(form.submitted_at).toLocaleString()}
+                              <strong>Datum:</strong> {new Date(form.submitted_at).toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -676,12 +677,12 @@ export const AdminDashboard = () => {
                             {form.locked ? (
                               <>
                                 <Lock className="w-4 h-4" />
-                                Locked
+                                Gesperrt
                               </>
                             ) : (
                               <>
                                 <Unlock className="w-4 h-4" />
-                                Unlocked
+                                Entsperrt
                               </>
                             )}
                           </span>
@@ -733,13 +734,13 @@ export const AdminDashboard = () => {
               <div className="bg-linear-to-r from-purple-500 to-pink-600 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <UploadIcon className="w-6 h-6" />
-                  Documents ({locationDocuments.length})
+                  Dokumente ({locationDocuments.length})
                 </h2>
               </div>
               {locationDocuments.length === 0 ? (
                 <div className="p-12 text-center">
                   <UploadIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-500 text-lg">No documents uploaded for this location.</p>
+                  <p className="text-gray-500 text-lg">Für diesen Standort wurden keine Dokumente hochgeladen.</p>
                 </div>
               ) : (
                 <div className="p-6 space-y-4">
@@ -756,10 +757,10 @@ export const AdminDashboard = () => {
                           </p>
                           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                             <span>
-                              <strong>Uploaded by:</strong> {getUsername(doc.uploaded_by)}
+                              <strong>Hochgeladen von:</strong> {getUsername(doc.uploaded_by)}
                             </span>
                             <span>
-                              <strong>Date:</strong> {new Date(doc.uploaded_at).toLocaleString()}
+                              <strong>Datum:</strong> {new Date(doc.uploaded_at).toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -773,12 +774,12 @@ export const AdminDashboard = () => {
                             {doc.locked ? (
                               <>
                                 <Lock className="w-4 h-4" />
-                                Locked
+                                Gesperrt
                               </>
                             ) : (
                               <>
                                 <Unlock className="w-4 h-4" />
-                                Unlocked
+                                Entsperrt
                               </>
                             )}
                           </span>
@@ -786,13 +787,10 @@ export const AdminDashboard = () => {
                             onClick={() => {
                               let fileUrl = doc.file_url;
 
-                              // Only add .pdf extension for raw/PDF files, not images
+
                               if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
                                 fileUrl += '.pdf';
                               }
-
-                              console.log('Opening document:', fileUrl);
-                              console.log('Resource type:', doc.resource_type);
                               window.open(fileUrl, '_blank', 'noopener,noreferrer');
                             }}
                             className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
@@ -839,7 +837,7 @@ export const AdminDashboard = () => {
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                   <FileText className="w-6 h-6 text-blue-600" />
-                  View Form - {viewingForm.section}
+                  Formular ansehen - {viewingForm.section}
                 </h2>
                 <button
                   onClick={() => setViewingForm(null)}
@@ -849,10 +847,10 @@ export const AdminDashboard = () => {
                 </button>
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
+              <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Submitted By</p>
+                    <p className="text-sm text-gray-600 mb-1">Eingereicht von</p>
                     <p className="text-lg font-semibold text-gray-800">{getUsername(viewingForm.submitted_by)}</p>
                   </div>
                   <div>
@@ -871,7 +869,7 @@ export const AdminDashboard = () => {
               </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800 border-b pb-2 mb-4">Form Data</h3>
+                <h3 className="text-lg font-bold text-gray-800 border-b pb-2 mb-4">Formulardaten</h3>
                 <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                   {getFormFields(viewingForm.section).map((field) => {
                     const value = viewingForm.data[field.name];
@@ -884,7 +882,7 @@ export const AdminDashboard = () => {
 
                         {field.type === "textarea" ? (
                           <p className="text-gray-800 whitespace-pre-wrap">
-                            {value || <span className="text-gray-400 italic">Not provided</span>}
+                            {value || <span className="text-gray-400 italic">Nicht angegeben</span>}
                           </p>
                         ) : field.type === "date" ? (
                           <p className="text-gray-800">
@@ -892,11 +890,11 @@ export const AdminDashboard = () => {
                               day: '2-digit',
                               month: 'short',
                               year: 'numeric'
-                            }) : <span className="text-gray-400 italic">Not provided</span>}
+                            }) : <span className="text-gray-400 italic">Nicht bereitgestellt</span>}
                           </p>
                         ) : (
                           <p className="text-gray-800">
-                            {value || <span className="text-gray-400 italic">Not provided</span>}
+                            {value || <span className="text-gray-400 italic">Nicht bereitgestellt</span>}
                           </p>
                         )}
                       </div>
@@ -910,7 +908,7 @@ export const AdminDashboard = () => {
                   onClick={() => setViewingForm(null)}
                   className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
                 >
-                  Close
+                  Schließen
                 </button>
               </div>
             </div>
@@ -995,7 +993,7 @@ export const AdminDashboard = () => {
 
               <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-4 mb-6">
                 <p className="text-sm text-gray-700">
-                  <strong>Admin Override:</strong> You can edit this form even if it's locked. Changes will be saved immediately.
+                  <strong>Administratorüberschreibung:</strong> Sie können dieses Formular bearbeiten, auch wenn es gesperrt ist. Änderungen werden sofort gespeichert.
                 </p>
               </div>
 
@@ -1027,15 +1025,15 @@ export const AdminDashboard = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-    
+
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">🔧 Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2"> Admin Dashboard</h1>
         <p className="text-gray-600">
           Logged in as: <span className="font-semibold">{admin?.username}</span> ({admin?.role})
         </p>
       </div>
 
-     
+
       <div className="flex space-x-2 mb-6 border-b">
         <button
           onClick={() => setActiveTab("users")}
@@ -1044,7 +1042,7 @@ export const AdminDashboard = () => {
             : "text-gray-500 hover:text-gray-700"
             }`}
         >
-          👥 User Management
+          Benutzerverwaltung
         </button>
         <button
           onClick={() => setActiveTab("locations")}
@@ -1053,15 +1051,15 @@ export const AdminDashboard = () => {
             : "text-gray-500 hover:text-gray-700"
             }`}
         >
-          📍 Location Management
+          Standortverwaltung
         </button>
       </div>
 
       {activeTab === "users" && (
         <>
-          {/* Create User Form */}
+
           <div className="mb-8 border border-yellow-400 p-6 rounded-lg bg-yellow-50 shadow-md">
-            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Create New User</h2>
+            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Neuen Benutzer erstellen</h2>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateUser}>
               <input
                 type="text"
@@ -1073,7 +1071,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="email"
-                placeholder="Email *"
+                placeholder="E-mail *"
                 value={newUser.email}
                 onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1081,7 +1079,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="First Name *"
+                placeholder="Vorname *"
                 value={newUser.first_name}
                 onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1089,7 +1087,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="Last Name *"
+                placeholder="Nachname *"
                 value={newUser.last_name}
                 onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1097,7 +1095,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="password"
-                placeholder="Password *"
+                placeholder="Passwort *"
                 value={newUser.password}
                 onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1105,7 +1103,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="password"
-                placeholder="Confirm Password *"
+                placeholder="Passwort bestätigen *"
                 value={newUser.password2}
                 onChange={(e) => setNewUser({ ...newUser, password2: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1113,7 +1111,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="tel"
-                placeholder="Phone (optional)"
+                placeholder="Telefon (optional)"
                 value={newUser.phone}
                 onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
@@ -1125,7 +1123,7 @@ export const AdminDashboard = () => {
               >
                 <option value="ADMIN">ADMIN</option>
                 <option value="GASTRONOM">GASTRONOM</option>
-                <option value="EXTERNAL">EXTERNAL</option>
+                <option value="EXTERNAL">EXTERN</option>
               </select>
 
               {newUser.role === "EXTERNAL" && (
@@ -1145,7 +1143,7 @@ export const AdminDashboard = () => {
                 className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
                 disabled={newUser.role !== "GASTRONOM"}
               >
-                <option value="">Assign Location (optional)</option>
+                <option value="">Standort zuweisen (optional))</option>
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
                     {loc.name} - {loc.location_id}
@@ -1157,26 +1155,26 @@ export const AdminDashboard = () => {
                 type="submit"
                 className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded col-span-2 font-semibold transition-all shadow-md"
               >
-                Create User
+                Benutzer erstellen
               </button>
             </form>
           </div>
 
-          {/* Users Table */}
+
           <div className="bg-white border rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">All Users ({users.length})</h2>
+            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">Alle Benutzer ({users.length})</h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="p-3 text-left border-b">Username</th>
-                    <th className="p-3 text-left border-b">Email</th>
+                    <th className="p-3 text-left border-b">Benutzername</th>
+                    <th className="p-3 text-left border-b">E-Mail</th>
                     <th className="p-3 text-left border-b">Name</th>
-                    <th className="p-3 text-left border-b">Role</th>
-                    <th className="p-3 text-left border-b">Phone</th>
-                    <th className="p-3 text-left border-b">Company</th>
-                    <th className="p-3 text-left border-b">Location</th>
-                    <th className="p-3 text-left border-b">Actions</th>
+                    <th className="p-3 text-left border-b">Rolle</th>
+                    <th className="p-3 text-left border-b">Telefon</th>
+                    <th className="p-3 text-left border-b">Firma</th>
+                    <th className="p-3 text-left border-b">Standort</th>
+                    <th className="p-3 text-left border-b">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1208,13 +1206,13 @@ export const AdminDashboard = () => {
                             setEditingUser(u);
                           }}
                         >
-                          Edit
+                          Bearbeiten
                         </button>
                         <button
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
                           onClick={() => handleDeleteUser(u.id)}
                         >
-                          Delete
+                          Löschen
                         </button>
                       </td>
                     </tr>
@@ -1228,13 +1226,13 @@ export const AdminDashboard = () => {
 
       {activeTab === "locations" && (
         <>
-          {/* Create Location Form */}
+
           <div className="mb-8 border border-blue-400 p-6 rounded-lg bg-blue-50 shadow-md">
-            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Create New Location</h2>
+            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Neuen Standort erstellen</h2>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateLocation}>
               <input
                 type="text"
-                placeholder="Restaurant Name *"
+                placeholder="Restaurantname *"
                 value={newLocation.name}
                 onChange={(e) => setNewLocation({ ...newLocation, name: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
@@ -1242,7 +1240,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="Location ID (e.g., BERLIN-001) *"
+                placeholder="Standort-ID (z. B. BERLIN-001) *"
                 value={newLocation.location_id}
                 onChange={(e) => setNewLocation({ ...newLocation, location_id: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
@@ -1250,7 +1248,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="Address *"
+                placeholder="Adresse *"
                 value={newLocation.address}
                 onChange={(e) => setNewLocation({ ...newLocation, address: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
@@ -1258,7 +1256,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="City *"
+                placeholder="Stadt *"
                 value={newLocation.city}
                 onChange={(e) => setNewLocation({ ...newLocation, city: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
@@ -1266,7 +1264,7 @@ export const AdminDashboard = () => {
               />
               <input
                 type="text"
-                placeholder="Postal Code *"
+                placeholder="Postleitzahl *"
                 value={newLocation.postal_code}
                 onChange={(e) => setNewLocation({ ...newLocation, postal_code: e.target.value })}
                 className="border p-2 rounded focus:ring-2 focus:ring-blue-500"
@@ -1276,26 +1274,26 @@ export const AdminDashboard = () => {
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded font-semibold transition-all shadow-md"
               >
-                Create Location
+                Standort erstellen
               </button>
             </form>
           </div>
 
-          {/* Locations Table */}
+
           <div className="bg-white border rounded-lg shadow-md overflow-hidden">
             <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
-              All Locations ({locations.length})
+              Alle Standorte({locations.length})
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="p-3 text-left border-b">Restaurant Name</th>
-                    <th className="p-3 text-left border-b">Location ID</th>
-                    <th className="p-3 text-left border-b">Address</th>
-                    <th className="p-3 text-left border-b">City</th>
-                    <th className="p-3 text-left border-b">Current Operator</th>
-                    <th className="p-3 text-left border-b">Actions</th>
+                    <th className="p-3 text-left border-b">Restaurantname</th>
+                    <th className="p-3 text-left border-b">Standort-ID</th>
+                    <th className="p-3 text-left border-b">Adresse</th>
+                    <th className="p-3 text-left border-b">Stadt</th>
+                    <th className="p-3 text-left border-b">Aktueller Betreiber</th>
+                    <th className="p-3 text-left border-b">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1325,7 +1323,7 @@ export const AdminDashboard = () => {
                             <p className="text-xs text-gray-500">@{loc.current_operator.username}</p>
                           </div>
                         ) : (
-                          <span className="text-gray-400 italic">Not assigned</span>
+                          <span className="text-gray-400 italic">Nicht zugewiesen</span>
                         )}
                       </td>
                       <td className="p-3 space-x-2">
@@ -1333,7 +1331,7 @@ export const AdminDashboard = () => {
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
                           onClick={() => handleViewLocation(loc)}
                         >
-                          View Details
+                          Details anzeigen
                         </button>
                         <button
                           className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
@@ -1342,7 +1340,7 @@ export const AdminDashboard = () => {
                             setShowAssignModal(true);
                           }}
                         >
-                          Assign
+                          Zuweisen
                         </button>
                         <button
                           className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
@@ -1351,13 +1349,13 @@ export const AdminDashboard = () => {
                             setEditingLocation(loc);
                           }}
                         >
-                          Edit
+                          Bearbeiten
                         </button>
                         <button
                           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
                           onClick={() => handleDeleteLocation(loc.id)}
                         >
-                          Delete
+                          Löschen
                         </button>
                       </td>
                     </tr>
@@ -1379,7 +1377,7 @@ export const AdminDashboard = () => {
             <h2 className="text-xl mb-2 font-bold">Edit User</h2>
             <input
               type="email"
-              placeholder="Email"
+              placeholder="E-mail"
               value={editingUser.email || ""}
               onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1387,7 +1385,7 @@ export const AdminDashboard = () => {
             />
             <input
               type="text"
-              placeholder="First Name"
+              placeholder="Vorname"
               value={editingUser.first_name || ""}
               onChange={(e) => setEditingUser({ ...editingUser, first_name: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1395,7 +1393,7 @@ export const AdminDashboard = () => {
             />
             <input
               type="text"
-              placeholder="Last Name"
+              placeholder="Nachname"
               value={editingUser.last_name || ""}
               onChange={(e) => setEditingUser({ ...editingUser, last_name: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1403,14 +1401,14 @@ export const AdminDashboard = () => {
             />
             <input
               type="tel"
-              placeholder="Phone"
+              placeholder="Telefon"
               value={editingUser.phone || ""}
               onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
               className="border p-2 w-full rounded"
             />
             <input
               type="text"
-              placeholder="Company Name"
+              placeholder="Firmenname"
               value={editingUser.company_name || ""}
               onChange={(e) => setEditingUser({ ...editingUser, company_name: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1424,10 +1422,10 @@ export const AdminDashboard = () => {
                   setEditingUser({});
                 }}
               >
-                Cancel
+                Abbrechen
               </button>
               <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                Save Changes
+                Änderungen speichern
               </button>
             </div>
           </form>
@@ -1444,7 +1442,7 @@ export const AdminDashboard = () => {
             <h2 className="text-xl mb-2 font-bold">Edit Location</h2>
             <input
               type="text"
-              placeholder="Restaurant Name"
+              placeholder="Restaurantname"
               value={editingLocation.name || ""}
               onChange={(e) => setEditingLocation({ ...editingLocation, name: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1452,7 +1450,7 @@ export const AdminDashboard = () => {
             />
             <input
               type="text"
-              placeholder="Address"
+              placeholder="Adresse"
               value={editingLocation.address || ""}
               onChange={(e) => setEditingLocation({ ...editingLocation, address: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1460,7 +1458,7 @@ export const AdminDashboard = () => {
             />
             <input
               type="text"
-              placeholder="City"
+              placeholder="Stadt"
               value={editingLocation.city || ""}
               onChange={(e) => setEditingLocation({ ...editingLocation, city: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1468,7 +1466,7 @@ export const AdminDashboard = () => {
             />
             <input
               type="text"
-              placeholder="Postal Code"
+              placeholder="Postleitzahl"
               value={editingLocation.postal_code || ""}
               onChange={(e) => setEditingLocation({ ...editingLocation, postal_code: e.target.value })}
               className="border p-2 w-full rounded"
@@ -1483,10 +1481,10 @@ export const AdminDashboard = () => {
                   setEditingLocation({});
                 }}
               >
-                Cancel
+                Abbrechen
               </button>
               <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                Save Changes
+                Änderungen speichern
               </button>
             </div>
           </form>
@@ -1504,7 +1502,7 @@ export const AdminDashboard = () => {
 
             <div className="mb-4">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select Gastronom (Restaurant Operator) *
+                Gastronom (Restaurantbetreiber) auswählen
               </label>
               <select
                 value={selectedOperatorId}
@@ -1521,15 +1519,14 @@ export const AdminDashboard = () => {
               </select>
               {getGastronomUsers().length === 0 && (
                 <p className="text-xs text-red-500 mt-1">
-                  No Gastronom users available. Create a Gastronom user first.
+                  Keine Gastronom-Benutzer verfügbar. Erstellen Sie zuerst einen Gastronom-Benutzer.
                 </p>
               )}
             </div>
 
             <div className="bg-yellow-50 border border-yellow-300 rounded p-3 mb-4">
               <p className="text-sm text-gray-700">
-                <strong>Note:</strong> If this location already has an operator, they will be replaced.
-                The previous operator will lose access, but all historical data will remain.
+                <strong>Note:</strong> Wenn dieser Standort bereits einen Betreiber hat, wird dieser ersetzt. Der vorherige Betreiber verliert den Zugriff, aber alle historischen Daten bleiben erhalten.
               </p>
             </div>
 
@@ -1543,14 +1540,14 @@ export const AdminDashboard = () => {
                 }}
                 className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded font-semibold"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="submit"
                 disabled={!selectedOperatorId}
                 className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                Assign Operator
+                Betreiber zuweisen
               </button>
             </div>
           </form>

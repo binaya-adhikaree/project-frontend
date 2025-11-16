@@ -28,7 +28,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-blue-100 via-white to-blue-50">
+    <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] bg-gradient-to-br from-blue-100 via-white to-blue-50">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
           Welcome Back 👋

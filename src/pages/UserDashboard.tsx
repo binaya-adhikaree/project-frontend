@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import api from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 import { FileText, Upload, Users, MapPin, Lock, Unlock, Calendar, Building2, Mail, AlertCircle, CheckCircle, XCircle, RefreshCw, Download, Eye, Trash2, Edit } from "lucide-react";
+import { SubscriptionBanner } from "../components/SubscriptionBanner";
 
 
 interface Location {
@@ -57,45 +58,46 @@ interface DocumentUpload {
 const getFormFields = (section: string) => {
   const formConfigs: Record<string, any[]> = {
     "3.1": [
-      { name: "disposal_company", label: "Disposal Company Name", type: "text", required: true },
-      { name: "disposal_date", label: "Last Disposal Date", type: "date", required: true },
-      { name: "maintenance_company", label: "Maintenance Company", type: "text", required: true },
-      { name: "maintenance_date", label: "Last Maintenance Date", type: "date", required: true },
-      { name: "inspection_company", label: "Inspection Company", type: "text", required: true },
-      { name: "inspection_date", label: "Last Inspection Date", type: "date", required: true },
-      { name: "notes", label: "Additional Notes", type: "textarea", required: false },
+      { name: "disposal_company", label: "Name der Entsorgungsfirma", type: "text", required: true },
+      { name: "disposal_date", label: "Letztes Entsorgungsdatum", type: "date", required: true },
+      { name: "maintenance_company", label: "Wartungsfirma", type: "text", required: true },
+      { name: "maintenance_date", label: "Letztes Wartungsdatum", type: "date", required: true },
+      { name: "inspection_company", label: "Inspektionsfirma", type: "text", required: true },
+      { name: "inspection_date", label: "Letztes Inspektionsdatum", type: "date", required: true },
+      { name: "notes", label: "Zusätzliche Notizen", type: "textarea", required: false },
     ],
     "3.2": [
-      { name: "disposal_method", label: "Disposal Method", type: "select", required: true, options: ["Regular Collection", "Special Disposal", "Recycling", "Other"] },
-      { name: "disposal_frequency", label: "Disposal Frequency", type: "select", required: true, options: ["Daily", "Weekly", "Bi-weekly", "Monthly"] },
-      { name: "waste_types", label: "Waste Types", type: "text", required: true, placeholder: "e.g., Organic, Grease, Packaging" },
-      { name: "self_inspection_date", label: "Self-Inspection Date", type: "date", required: true },
-      { name: "inspector_name", label: "Inspector Name", type: "text", required: true },
-      { name: "defects_found", label: "Defects Found", type: "select", required: true, options: ["None", "Minor", "Major"] },
-      { name: "corrective_actions", label: "Corrective Actions Taken", type: "textarea", required: false },
+      { name: "disposal_method", label: "Entsorgungsmethode", type: "select", required: true, options: ["Reguläre Abholung", "Sonderentsorgung", "Recycling", "Andere"] },
+      { name: "disposal_frequency", label: "Entsorgungsfrequenz", type: "select", required: true, options: ["Täglich", "Wöchentlich", "Alle zwei Wochen", "Monatlich"] },
+      { name: "waste_types", label: "Abfallarten", type: "text", required: true, placeholder: "z. B. Organisch, Fett, Verpackung" },
+      { name: "self_inspection_date", label: "Datum der Selbstkontrolle", type: "date", required: true },
+      { name: "inspector_name", label: "Name des Prüfers", type: "text", required: true },
+      { name: "defects_found", label: "Gefundene Mängel", type: "select", required: true, options: ["Keine", "Geringfügig", "Gravierend"] },
+      { name: "corrective_actions", label: "Ergriffene Korrekturmaßnahmen", type: "textarea", required: false },
     ],
     "3.3": [
-      { name: "equipment_name", label: "Equipment/System Name", type: "text", required: true },
-      { name: "maintenance_type", label: "Maintenance Type", type: "select", required: true, options: ["Preventive", "Corrective", "Emergency", "Routine"] },
-      { name: "technician_name", label: "Technician Name", type: "text", required: true },
-      { name: "company_name", label: "Service Company", type: "text", required: true },
-      { name: "maintenance_date", label: "Maintenance Date", type: "date", required: true },
-      { name: "work_performed", label: "Work Performed", type: "textarea", required: true },
-      { name: "parts_replaced", label: "Parts Replaced", type: "text", required: false },
-      { name: "next_maintenance_due", label: "Next Maintenance Due", type: "date", required: false },
+      { name: "equipment_name", label: "Name der Ausrüstung/System", type: "text", required: true },
+      { name: "maintenance_type", label: "Art der Wartung", type: "select", required: true, options: ["Präventiv", "Korrektiv", "Notfall", "Routine"] },
+      { name: "technician_name", label: "Name des Technikers", type: "text", required: true },
+      { name: "company_name", label: "Servicefirma", type: "text", required: true },
+      { name: "maintenance_date", label: "Wartungsdatum", type: "date", required: true },
+      { name: "work_performed", label: "Durchgeführte Arbeiten", type: "textarea", required: true },
+      { name: "parts_replaced", label: "Ersetzte Teile", type: "text", required: false },
+      { name: "next_maintenance_due", label: "Nächste Wartung fällig am", type: "date", required: false },
     ],
     "3.4": [
-      { name: "defect_description", label: "Defect Description", type: "textarea", required: true },
-      { name: "defect_location", label: "Location of Defect", type: "text", required: true },
-      { name: "severity", label: "Severity Level", type: "select", required: true, options: ["Low", "Medium", "High", "Critical"] },
-      { name: "detected_date", label: "Date Detected", type: "date", required: true },
-      { name: "detected_by", label: "Detected By", type: "text", required: true },
-      { name: "repair_date", label: "Repair Date", type: "date", required: false },
-      { name: "repaired_by", label: "Repaired By", type: "text", required: false },
-      { name: "repair_description", label: "Repair Description", type: "textarea", required: false },
-      { name: "status", label: "Status", type: "select", required: true, options: ["Pending", "In Progress", "Completed"] },
+      { name: "defect_description", label: "Beschreibung des Mangels", type: "textarea", required: true },
+      { name: "defect_location", label: "Ort des Mangels", type: "text", required: true },
+      { name: "severity", label: "Schweregrad", type: "select", required: true, options: ["Niedrig", "Mittel", "Hoch", "Kritisch"] },
+      { name: "detected_date", label: "Entdeckungsdatum", type: "date", required: true },
+      { name: "detected_by", label: "Entdeckt von", type: "text", required: true },
+      { name: "repair_date", label: "Reparaturdatum", type: "date", required: false },
+      { name: "repaired_by", label: "Repariert von", type: "text", required: false },
+      { name: "repair_description", label: "Beschreibung der Reparatur", type: "textarea", required: false },
+      { name: "status", label: "Status", type: "select", required: true, options: ["Ausstehend", "In Bearbeitung", "Abgeschlossen"] },
     ],
   };
+
   return formConfigs[section] || [];
 };
 
@@ -133,6 +135,14 @@ export const UserDashboard = () => {
   const isAdmin = user?.role === "ADMIN" || user?.is_staff || user?.is_superuser;
   const isGastronom = user?.role === "GASTRONOM";
   const isExternal = user?.role === "EXTERNAL";
+
+
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{
+    status: string;
+    canUpload: boolean;
+  } | null>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
+
 
   useEffect(() => {
     fetchData();
@@ -209,7 +219,6 @@ export const UserDashboard = () => {
       setDocuments(docList);
 
 
-
     } catch (err) {
       console.error("❌ Failed to fetch data:", err);
     } finally {
@@ -217,6 +226,35 @@ export const UserDashboard = () => {
       setRefreshing(false);
     }
   };
+
+
+  useEffect(() => {
+    fetchData();
+    if (isGastronom) {
+      fetchSubscriptionStatus();
+    }
+  }, []);
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const token = localStorage.getItem("access");
+      const response = await api.get("/subscriptions/my-subscription/", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubscriptionStatus({
+        status: response.data.status,
+        canUpload: response.data.can_upload || response.data.status === "ACTIVE"
+      });
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setSubscriptionStatus({ status: "INACTIVE", canUpload: false });
+      }
+    } finally {
+      setLoadingSubscription(false);
+    }
+  };
+
+  const showSubscriptionBanner = isGastronom && !subscriptionStatus?.canUpload;
 
   const handleGrantAccess = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -486,23 +524,25 @@ export const UserDashboard = () => {
   };
 
   const formSectionChoices = [
-    { value: "3.1", label: "3.1 - Proof of disposal, maintenance, and inspection" },
-    { value: "3.2", label: "3.2 - Disposal and self-inspection report" },
-    { value: "3.3", label: "3.3 - Maintenance report" },
-    { value: "3.4", label: "3.4 - Report of defects and repairs" },
+    { value: "3.1", label: "3.1 - Nachweis von Entsorgung, Wartung und Inspektion" },
+    { value: "3.2", label: "3.2 - Entsorgungs- und Selbstkontrollbericht" },
+    { value: "3.3", label: "3.3 - Wartungsbericht" },
+    { value: "3.4", label: "3.4 - Bericht über Mängel und Reparaturen" },
   ];
+
 
   const getDocumentSectionChoices = () => {
     const allSections = [
-      { value: "2.1", label: "2.1 - Legal approvals and permits" },
-      { value: "2.2", label: "2.2 - Construction approval or safety certificate" },
-      { value: "2.3", label: "2.3 - Installation and operation manual" },
-      { value: "2.4", label: "2.4 - Maintenance certificate" },
-      { value: "2.5", label: "2.5 - Site plans and schematics" },
-      { value: "3.5", label: "3.5 - Waste removal record" },
-      { value: "3.6", label: "3.6 - Inspection report (General inspection)" },
-      { value: "3.7", label: "3.7 - Record of cleaning and detergents used" },
+      { value: "2.1", label: "2.1 - Genehmigungen und behördliche Zulassungen" },
+      { value: "2.2", label: "2.2 - Baugenehmigung oder Sicherheitszertifikat" },
+      { value: "2.3", label: "2.3 - Installations- und Bedienungsanleitung" },
+      { value: "2.4", label: "2.4 - Wartungszertifikat" },
+      { value: "2.5", label: "2.5 - Lagepläne und Schaltpläne" },
+      { value: "3.5", label: "3.5 - Entsorgungsnachweis" },
+      { value: "3.6", label: "3.6 - Inspektionsbericht (Allgemeine Kontrolle)" },
+      { value: "3.7", label: "3.7 - Aufzeichnung von Reinigungsmitteln und eingesetzten Reinigungsstoffen" },
     ];
+
 
     if (isExternal) {
       return allSections.filter(s => ["2.4", "3.5", "3.6", "3.7"].includes(s.value));
@@ -536,7 +576,7 @@ export const UserDashboard = () => {
       <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-700 font-semibold text-lg">Loading Dashboard...</p>
+          <p className="text-gray-700 font-semibold text-lg">Dashboard wird geladen…</p>
         </div>
       </div>
     );
@@ -550,17 +590,17 @@ export const UserDashboard = () => {
             <div className="text-center">
               <Lock className="w-20 h-20 mx-auto mb-4 text-amber-500" />
               <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                {isGastronom ? "No Location Assigned" : "No Access Granted"}
+                {isGastronom ? "Kein Standort zugewiesen" : "Kein Zugriff gewährt"}
               </h1>
               <p className="text-lg text-gray-600 mb-2">
                 {isGastronom
-                  ? "You are not currently assigned to any restaurant location."
-                  : "You don't have access to any restaurant locations yet."}
+                  ? "Ihnen wurde derzeit kein Restaurantstandort zugewiesen."
+                  : "Sie haben noch keinen Zugriff auf Restaurantstandorte."}
               </p>
               <p className="text-gray-500 mb-6">
                 {isGastronom
-                  ? "Please contact your administrator to assign you to a location."
-                  : "Please contact the restaurant operator (Gastronom) to grant you access."}
+                  ? "Bitte kontaktieren Sie Ihren Administrator, um Ihnen einen Standort zuzuweisen."
+                  : "Bitte kontaktieren Sie den Restaurantbetreiber (Gastronom), um Ihnen Zugriff zu gewähren."}
               </p>
             </div>
           </div>
@@ -568,6 +608,7 @@ export const UserDashboard = () => {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
@@ -579,17 +620,17 @@ export const UserDashboard = () => {
                 {isGastronom ? (
                   <>
                     <Building2 className="w-8 h-8 text-indigo-600" />
-                    Gastronom Dashboard
+                    Dashboard für Gastronomen
                   </>
                 ) : (
                   <>
                     <Building2 className="w-8 h-8 text-blue-600" />
-                    External Company Dashboard
+                    Dashboard für externe Firmen
                   </>
                 )}
               </h1>
               <p className="text-gray-600">
-                Welcome, <span className="font-semibold text-gray-800">{user?.first_name} {user?.last_name}</span>
+                Herzlich willkommen, <span className="font-semibold text-gray-800">{user?.first_name} {user?.last_name}</span>
                 {isExternal && user?.company_name && (
                   <> from <span className="font-semibold text-indigo-600">{user.company_name}</span></>
                 )}
@@ -610,7 +651,7 @@ export const UserDashboard = () => {
           <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
             <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-indigo-600" />
-              Select Location
+              Standort auswählen
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {locations.map((loc) => (
@@ -639,23 +680,23 @@ export const UserDashboard = () => {
             <div className="bg-linear-to-r from-amber-50 to-yellow-50 rounded-2xl shadow-xl p-6 mb-6 border-2 border-amber-300">
               <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
                 <MapPin className="w-6 h-6 text-amber-600" />
-                {isGastronom ? "Your Restaurant Location" : "Location Details"}
+                {isGastronom ? "Ihr Restaurantstandort" : "Standortdetails"}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="text-sm text-gray-600 mb-1">Restaurant Name</p>
+                  <p className="text-sm text-gray-600 mb-1">Restaurantname</p>
                   <p className="text-lg font-semibold text-gray-800">{selectedLocation.name}</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="text-sm text-gray-600 mb-1">Location ID</p>
+                  <p className="text-sm text-gray-600 mb-1">Standort-ID</p>
                   <p className="text-lg font-semibold text-amber-700">{selectedLocation.location_id}</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="text-sm text-gray-600 mb-1">Address</p>
+                  <p className="text-sm text-gray-600 mb-1">Adresse</p>
                   <p className="text-lg font-semibold text-gray-800">{selectedLocation.address}</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                  <p className="text-sm text-gray-600 mb-1">City & Postal Code</p>
+                  <p className="text-sm text-gray-600 mb-1">Stadt & Postleitzahl</p>
                   <p className="text-lg font-semibold text-gray-800">
                     {selectedLocation.city}, {selectedLocation.postal_code}
                   </p>
@@ -667,7 +708,7 @@ export const UserDashboard = () => {
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Total Forms</p>
+                    <p className="text-sm text-gray-600 mb-1">Gesamtformulare</p>
                     <p className="text-3xl font-bold text-gray-800">{stats.totalForms}</p>
                     <p className="text-xs text-gray-500 mt-1">
                       {stats.lockedForms} locked
@@ -680,10 +721,10 @@ export const UserDashboard = () => {
               <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Total Documents</p>
+                    <p className="text-sm text-gray-600 mb-1">Gesamtdokumente</p>
                     <p className="text-3xl font-bold text-gray-800">{stats.totalDocuments}</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {stats.lockedDocuments} locked
+                      {stats.lockedDocuments} Gesperrt
                     </p>
                   </div>
                   <Upload className="w-12 h-12 text-green-500 opacity-80" />
@@ -696,10 +737,10 @@ export const UserDashboard = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 mb-1">Active Access</p>
+                      <p className="text-sm text-gray-600 mb-1">Aktiver Zugriff</p>
                       <p className="text-3xl font-bold text-gray-800">{stats.activeAccess}</p>
                       <p className="text-xs text-gray-500 mt-1">
-                        of {stats.totalAccess} total
+                        of {stats.totalAccess}Gesamt
                       </p>
                     </div>
                     <Users className="w-12 h-12 text-purple-500 opacity-80" />
@@ -719,7 +760,7 @@ export const UserDashboard = () => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Building2 className="w-5 h-5" />
-                    Overview
+                    Übersicht
                   </div>
                 </button>
                 <button
@@ -731,7 +772,7 @@ export const UserDashboard = () => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <FileText className="w-5 h-5" />
-                    Forms ({stats.totalForms})
+                    Formulare ({stats.totalForms})
                   </div>
                 </button>
                 <button
@@ -743,7 +784,7 @@ export const UserDashboard = () => {
                 >
                   <div className="flex items-center justify-center gap-2">
                     <Upload className="w-5 h-5" />
-                    Documents ({stats.totalDocuments})
+                    Dokumente ({stats.totalDocuments})
                   </div>
                 </button>
                 {isGastronom && (
@@ -756,7 +797,7 @@ export const UserDashboard = () => {
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Users className="w-5 h-5" />
-                      Access ({stats.activeAccess})
+                      Zugriff ({stats.activeAccess})
                     </div>
                   </button>
                 )}
@@ -766,23 +807,30 @@ export const UserDashboard = () => {
             <div className="bg-white rounded-b-2xl shadow-lg p-6 mb-6">
 
               {activeTab === "overview" && (
+
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+                  {showSubscriptionBanner && (
+                    <SubscriptionBanner
+                      message="Your subscription is inactive. You can view existing data but cannot upload new forms or documents."
+                      showRenewButton={true}
+                    />
+                  )}
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Schnellaktionen</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
                       onClick={() => setActiveTab("forms")}
                       className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-xl shadow-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-1">
                       <FileText className="w-12 h-12 mx-auto mb-3" />
-                      <span className="block text-lg">Fill Out Forms</span>
-                      <p className="text-sm opacity-90 mt-2">Complete required documentation</p>
+                      <span className="block text-lg">Formulare ausfüllen</span>
+                      <p className="text-sm opacity-90 mt-2">Erforderliche Dokumentation abschließen</p>
                     </button>
 
                     <button
                       onClick={() => setActiveTab("documents")}
                       className="bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-6 rounded-xl shadow-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-1">
                       <Upload className="w-12 h-12 mx-auto mb-3" />
-                      <span className="block text-lg">Upload Documents</span>
-                      <p className="text-sm opacity-90 mt-2">Upload PDF files and images</p>
+                      <span className="block text-lg">Dokumente hochladen</span>
+                      <p className="text-sm opacity-90 mt-2">PDF-Dateien und Bilder hochladen</p>
                     </button>
 
                     {isGastronom && (
@@ -791,40 +839,40 @@ export const UserDashboard = () => {
                         className="bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-6 rounded-xl shadow-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-1"
                       >
                         <Users className="w-12 h-12 mx-auto mb-3" />
-                        <span className="block text-lg">Grant Access</span>
-                        <p className="text-sm opacity-90 mt-2">Add external companies</p>
+                        <span className="block text-lg">Zugriff gewähren</span>
+                        <p className="text-sm opacity-90 mt-2">Externe Firmen hinzufügen</p>
                       </button>
                     )}
                   </div>
 
                   {isExternal && (
                     <div className="mt-8">
-                      <h3 className="text-2xl font-bold text-gray-800 mb-4">Available Upload Sections</h3>
+                      <h3 className="text-2xl font-bold text-gray-800 mb-4">Verfügbare Upload-Bereiche</h3>
                       <p className="text-gray-600 mb-4">
-                        As an external company, you can upload documents to the following sections:
+                        Als externes Unternehmen können Sie Dokumente in die folgenden Bereiche hochladen:
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="border-l-4 border-green-500 bg-green-50 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
-                          <p className="font-bold text-gray-800 text-lg mb-2">2.4 - Maintenance Certificate</p>
-                          <p className="text-sm text-gray-600">Maintenance service reports and certificates</p>
+                          <p className="font-bold text-gray-800 text-lg mb-2">2.4 - Wartungszertifikat</p>
+                          <p className="text-sm text-gray-600">Wartungsberichte und Zertifikate</p>
                         </div>
                         <div className="border-l-4 border-blue-500 bg-blue-50 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
-                          <p className="font-bold text-gray-800 text-lg mb-2">3.5 - Waste Removal Record</p>
-                          <p className="text-sm text-gray-600">Upload disposal certificates and waste management reports</p>
+                          <p className="font-bold text-gray-800 text-lg mb-2">3.5 - Abfallentsorgungsprotokoll</p>
+                          <p className="text-sm text-gray-600">Entsorgungszertifikate und Abfallwirtschaftsberichte hochladen</p>
                         </div>
                         <div className="border-l-4 border-purple-500 bg-purple-50 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
-                          <p className="font-bold text-gray-800 text-lg mb-2">3.6 - Inspection Report</p>
-                          <p className="text-sm text-gray-600">General inspection documentation and compliance reports</p>
+                          <p className="font-bold text-gray-800 text-lg mb-2">3.6 - Prüfbericht</p>
+                          <p className="text-sm text-gray-600">Allgemeine Inspektionsdokumentation und Compliance-Berichte</p>
                         </div>
                         <div className="border-l-4 border-amber-500 bg-amber-50 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
-                          <p className="font-bold text-gray-800 text-lg mb-2">3.7 - Cleaning & Detergents Record</p>
-                          <p className="text-sm text-gray-600">Record of cleaning and detergents used</p>
+                          <p className="font-bold text-gray-800 text-lg mb-2">3.7 - Reinigungs- & Reinigungsmittelprotokoll</p>
+                          <p className="text-sm text-gray-600">Aufzeichnung der verwendeten Reinigungsmittel und Reinigungsarbeiten</p>
                         </div>
                       </div>
 
                       <div className="mt-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
                         <p className="text-sm text-gray-700">
-                          <strong>Note:</strong> Gastronoms can upload to all sections (2.1 - 3.7). External companies are limited to specific maintenance, waste, and inspection sections.
+                          <strong>Hinweis:</strong> Gastronomen können in alle Abschnitte (2.1 - 3.7) hochladen. Externe Unternehmen sind auf bestimmte Wartungs-, Abfall- und Inspektionsabschnitte beschränkt.
                         </p>
                       </div>
                     </div>
@@ -833,25 +881,33 @@ export const UserDashboard = () => {
               )}
 
               {activeTab === "forms" && (
+
                 <div>
+
+                  {showSubscriptionBanner && (
+                    <SubscriptionBanner
+                      message="Your subscription is inactive. Please renew to submit new forms."
+                      showRenewButton={true}
+                    />
+                  )}
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">Form Submissions</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">Formularübermittlungen</h3>
                     <button
                       onClick={() => setShowFormModal(true)}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
                       <FileText className="w-4 h-4" />
-                      New Form
+                      Neues Formular
                     </button>
                   </div>
 
                   {locationForms.length === 0 ? (
                     <div className="text-center py-12">
                       <FileText className="w-20 h-20 mx-auto mb-4 text-gray-300" />
-                      <p className="text-gray-500 text-lg">No forms submitted yet for this location.</p>
+                      <p className="text-gray-500 text-lg">Für diesen Standort wurden noch keine Formulare eingereicht.</p>
                       <button
                         onClick={() => setShowFormModal(true)}
                         className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold">
-                        Submit Your First Form
+                        Reichen Sie Ihr erstes Formular ein
                       </button>
                     </div>
                   ) : (
@@ -870,7 +926,7 @@ export const UserDashboard = () => {
                                   <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-600">
                                     <span className="flex items-center gap-1">
                                       <Users className="w-4 h-4" />
-                                      Submitted by: <strong>{getUsername(form.submitted_by)}</strong>
+                                      Eingereicht von: <strong>{getUsername(form.submitted_by)}</strong>
                                     </span>
                                     <span className="flex items-center gap-1">
                                       <Calendar className="w-4 h-4" />
@@ -896,12 +952,12 @@ export const UserDashboard = () => {
                                 {form.locked ? (
                                   <>
                                     <Lock className="w-4 h-4" />
-                                    Locked
+                                    Gesperrt
                                   </>
                                 ) : (
                                   <>
                                     <Unlock className="w-4 h-4" />
-                                    Editable
+                                    Bearbeitbar
                                   </>
                                 )}
                               </span>
@@ -927,24 +983,31 @@ export const UserDashboard = () => {
               )}
               {activeTab === "documents" && (
                 <div>
+
+                  {showSubscriptionBanner && (
+                    <SubscriptionBanner
+                      message="Your subscription is inactive. Please renew to submit new forms."
+                      showRenewButton={true}
+                    />
+                  )}
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">Document Uploads</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">Dokumenten-Uploads</h3>
                     <button
                       onClick={() => setShowDocumentModal(true)}
                       className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
                       <Upload className="w-4 h-4" />
-                      Upload Document
+                      Dokument hochladen
                     </button>
                   </div>
 
                   {locationDocuments.length === 0 ? (
                     <div className="text-center py-12">
                       <Upload className="w-20 h-20 mx-auto mb-4 text-gray-300" />
-                      <p className="text-gray-500 text-lg">No documents uploaded yet for this location.</p>
+                      <p className="text-gray-500 text-lg">Für diesen Standort wurden noch keine Dokumente hochgeladen.</p>
                       <button
                         onClick={() => setShowDocumentModal(true)}
                         className="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold">
-                        Upload Your First Document
+                        Laden Sie Ihr erstes Dokument hoch
                       </button>
                     </div>
                   ) : (
@@ -984,7 +1047,7 @@ export const UserDashboard = () => {
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 bg-green-100 text-green-800">
-                                <Lock className="w-4 h-4" /> Locked
+                                <Lock className="w-4 h-4" /> Gesperrt
                               </span>
 
                               {doc.file_url && (
@@ -992,7 +1055,7 @@ export const UserDashboard = () => {
                                   onClick={() => {
                                     let fileUrl = doc.file_url;
 
-                                    // Only add .pdf extension for raw/PDF files
+
                                     if (doc.resource_type === 'raw' && !fileUrl.endsWith('.pdf')) {
                                       fileUrl += '.pdf';
                                     }
@@ -1041,13 +1104,13 @@ export const UserDashboard = () => {
               {activeTab === "access" && isGastronom && (
                 <div>
                   <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">External Company Access</h3>
+                    <h3 className="text-2xl font-bold text-gray-800">Zugriff für externe Firmen</h3>
                     <button
                       onClick={() => setShowGrantAccessModal(true)}
                       className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md"
                     >
                       <Users className="w-4 h-4" />
-                      Grant Access
+                      Zugriff gewähren
                     </button>
                   </div>
 
@@ -1059,7 +1122,7 @@ export const UserDashboard = () => {
                         onClick={() => setShowGrantAccessModal(true)}
                         className="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold"
                       >
-                        Grant Access to External Company
+                        Zugriff für externes Unternehmen gewähren
                       </button>
                     </div>
                   ) : (
@@ -1068,113 +1131,37 @@ export const UserDashboard = () => {
                         <thead>
                           <tr className="bg-linear-to-r from-gray-50 to-gray-100">
                             <th className="p-4 text-left border-b-2 border-gray-300 font-bold text-gray-700">
-                              Company Name
+                              Firmenname
                             </th>
                             <th className="p-4 text-left border-b-2 border-gray-300 font-bold text-gray-700">
-                              Contact Email
+                              Kontakt-E-Mail
                             </th>
                             <th className="p-4 text-left border-b-2 border-gray-300 font-bold text-gray-700">
-                              Granted On
+                              Gewährt am
                             </th>
                             <th className="p-4 text-left border-b-2 border-gray-300 font-bold text-gray-700">
                               Status
                             </th>
                             <th className="p-4 text-left border-b-2 border-gray-300 font-bold text-gray-700">
-                              Actions
+                              Aktionen
                             </th>
                           </tr>
                         </thead>
-                        {/* <tbody>
-                          {locationAccess.map((access) => (
-                            <tr
-                              key={access.id}
-                              className="hover:bg-gray-50 border-b transition-colors"
-                            >
-                              <td className="p-4 border-b">
-                                <div className="flex items-center gap-2">
-                                  <Building2 className="w-5 h-5 text-gray-400" />
-                                  <div>
-                                    <p className="font-semibold text-gray-800">
-                                      {access.external_user?.company_name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      {access.external_user?.username}
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="p-4 border-b">
-                                <div className="flex items-center gap-2 text-gray-700">
-                                  <Mail className="w-4 h-4 text-gray-400" />
-                                  {access.external_user?.email}
-                                </div>
-                              </td>
-                              <td className="p-4 border-b text-gray-700">
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-gray-400" />
-                                  {new Date(access.granted_at).toLocaleDateString('en-US', {
-                                    day: '2-digit',
-                                    month: 'short',
-                                    year: 'numeric'
-                                  })}
-                                </div>
-                              </td>
-                              <td className="p-4 border-b">
-                                <span
-                                  className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center gap-1 ${access.is_active
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                    }`}
-                                >
-                                  {access.is_active ? (
-                                    <>
-                                      <CheckCircle className="w-4 h-4" />
-                                      Active
-                                    </>
-                                  ) : (
-                                    <>
-                                      <XCircle className="w-4 h-4" />
-                                      Revoked
-                                    </>
-                                  )}
-                                </span>
-                              </td>
-                              <td className="p-4 border-b">
-                                {access.is_active ? (
-                                  <button
-                                    onClick={() => handleRevokeAccess(access.id)}
-                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1"
-                                  >
-                                    <XCircle className="w-4 h-4" />
-                                    Revoke
-                                  </button>
-                                ) : (
-                                  <button
-                                    onClick={() => handleRestoreAccess(access.id)}
-                                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1"
-                                  >
-                                    <CheckCircle className="w-4 h-4" />
-                                    Restore
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody> */}
+
                         <tbody>
                           {locationAccess.map((access) => {
-                            // Safely extract external user details - prioritize external_user_detail
+
                             const externalUser = access.external_user_detail ||
                               (typeof access.external_user === 'object' ? access.external_user : null);
 
-                            // Skip if we can't get user details
+
                             if (!externalUser) {
                               console.warn('⚠️ Missing external user details for access:', access);
                               return (
                                 <tr key={access.id} className="hover:bg-gray-50 border-b transition-colors">
                                   <td colSpan={5} className="p-4 text-center text-red-500">
                                     <AlertCircle className="w-5 h-5 inline mr-2" />
-                                    User data missing for access ID: {access.id}
+                                    Benutzerdaten fehlen für Zugriffs-ID: {access.id}
                                   </td>
                                 </tr>
                               );
@@ -1224,12 +1211,12 @@ export const UserDashboard = () => {
                                     {access.is_active ? (
                                       <>
                                         <CheckCircle className="w-4 h-4" />
-                                        Active
+                                        Aktiv
                                       </>
                                     ) : (
                                       <>
                                         <XCircle className="w-4 h-4" />
-                                        Revoked
+                                        Widerrufen
                                       </>
                                     )}
                                   </span>
@@ -1241,7 +1228,7 @@ export const UserDashboard = () => {
                                       className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1"
                                     >
                                       <XCircle className="w-4 h-4" />
-                                      Revoke
+                                      Widerrufen
                                     </button>
                                   ) : (
                                     <button
@@ -1249,7 +1236,7 @@ export const UserDashboard = () => {
                                       className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1"
                                     >
                                       <CheckCircle className="w-4 h-4" />
-                                      Restore
+                                      Wiederherstellen
                                     </button>
                                   )}
                                 </td>
@@ -1276,12 +1263,12 @@ export const UserDashboard = () => {
           >
             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
               <Users className="w-6 h-6 text-purple-600" />
-              Grant Access to External Company
+              Externem Unternehmen Zugriff gewähren
             </h2>
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select External Company *
+                *Externes Unternehmen auswählen*
               </label>
               <select
                 value={selectedExternalUser}
@@ -1289,7 +1276,7 @@ export const UserDashboard = () => {
                 className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 required
               >
-                <option value="">-- Select Company --</option>
+                <option value=""> Unternehmen auswählen </option>
                 {externalUsers.map((ext) => (
                   <option key={ext.id} value={ext.id}>
                     {ext.company_name} ({ext.email})
@@ -1301,8 +1288,8 @@ export const UserDashboard = () => {
                   <AlertCircle className="w-4 h-4 mt-0.5" />
                   <p>
                     {isAdmin
-                      ? "No external companies available. Create external user accounts first."
-                      : "No external companies available. Please contact your administrator to create external user accounts."
+                      ? "Keine externen Firmen verfügbar. Erstellen Sie zuerst externe Benutzerkonten."
+                      : "Keine externen Firmen verfügbar. Bitte kontaktieren Sie Ihren Administrator, um externe Benutzerkonten zu erstellen."
                     }
                   </p>
                 </div>
@@ -1314,8 +1301,7 @@ export const UserDashboard = () => {
                 <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-700">
-                    <strong>Note:</strong> This company will be able to upload documents and view
-                    information for <strong>{selectedLocation?.name}</strong>.
+                    <strong>Hinweis:</strong> Dieses Unternehmen kann Dokumente hochladen und Informationen einsehen für <strong>{selectedLocation?.name}</strong>.
                   </p>
                 </div>
               </div>
@@ -1330,7 +1316,7 @@ export const UserDashboard = () => {
                 }}
                 className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition-all"
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="submit"
@@ -1338,7 +1324,7 @@ export const UserDashboard = () => {
                 className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
               >
                 <CheckCircle className="w-4 h-4" />
-                Grant Access
+                Zugriff gewähren
               </button>
             </div>
           </form>
@@ -1353,12 +1339,12 @@ export const UserDashboard = () => {
           >
             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
               <FileText className="w-6 h-6 text-blue-600" />
-              Submit New Form
+              Neues Formular einrei
             </h2>
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Form Section *
+                Formularbereich *
               </label>
               <select
                 value={formSection}
@@ -1369,7 +1355,7 @@ export const UserDashboard = () => {
                 className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 required
               >
-                <option value="">-- Select Section --</option>
+                <option value=""> Abschnitt auswählen </option>
                 {formSectionChoices.map((section) => (
                   <option key={section.value} value={section.value}>
                     {section.label}
@@ -1444,8 +1430,8 @@ export const UserDashboard = () => {
                 <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-700">
-                    <strong>Location:</strong> {selectedLocation?.name}<br />
-                    <strong>Note:</strong> Once submitted, forms are locked by default and cannot be edited.
+                    <strong>Standort:</strong> {selectedLocation?.name}<br />
+                    <strong>Hinweis:</strong> Nach dem Absenden sind Formulare standardmäßig gesperrt und können nicht mehr bearbeitet werden.
                   </p>
                 </div>
               </div>
@@ -1472,12 +1458,12 @@ export const UserDashboard = () => {
                 {submittingForm ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Submitting...
+                    Wird gesendet…
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    Submit Form
+                    Formular absenden
                   </>
                 )}
               </button>
@@ -1494,12 +1480,12 @@ export const UserDashboard = () => {
           >
             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
               <Upload className="w-6 h-6 text-green-600" />
-              Upload Document
+              Dokument hochladen
             </h2>
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Document Section *
+                Dokumentenbereich *
               </label>
               <select
                 value={documentSection}
@@ -1507,7 +1493,7 @@ export const UserDashboard = () => {
                 className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                 required
               >
-                <option value="">-- Select Section --</option>
+                <option value=""> Bereich auswählen </option>
                 {getDocumentSectionChoices().map((section) => (
                   <option key={section.value} value={section.value}>
                     {section.label}
@@ -1518,7 +1504,7 @@ export const UserDashboard = () => {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Select File *
+                Datei auswählen *
               </label>
               <input
                 type="file"
@@ -1528,7 +1514,7 @@ export const UserDashboard = () => {
                 required
               />
               <p className="text-xs text-gray-500 mt-2">
-                Accepted formats: PDF, JPG, PNG (Max 10MB)
+                Akzeptierte Formate: PDF, JPG, PNG (Max. 10MB)
               </p>
             </div>
 
@@ -1538,7 +1524,7 @@ export const UserDashboard = () => {
                   <strong>Selected File:</strong> {documentFile.name}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Size: {(documentFile.size / 1024 / 1024).toFixed(2)} MB
+                  Größe: {(documentFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
             )}
@@ -1546,7 +1532,7 @@ export const UserDashboard = () => {
             {uploadingDocument && uploadProgress > 0 && (
               <div className="mb-6">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Uploading...</span>
+                  <span>Hochladen…</span>
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -1563,9 +1549,9 @@ export const UserDashboard = () => {
                 <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-700">
-                    <strong>Location:</strong> {selectedLocation?.name}<br />
-                    <strong>Status:</strong> Files will be uploaded to Cloudinary and stored securely.<br />
-                    <strong>Note:</strong> Documents are locked by default after upload.
+                    <strong>Standort:</strong> {selectedLocation?.name}<br />
+                    <strong>Status:</strong> Dateien werden in Cloudinary hochgeladen und sicher gespeichert.<br />
+                    <strong>Hinweis:</strong> Dokumente werden nach dem Hochladen standardmäßig gesperrt.
                   </p>
                 </div>
               </div>
@@ -1583,7 +1569,7 @@ export const UserDashboard = () => {
                 className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition-all"
                 disabled={uploadingDocument}
               >
-                Cancel
+                Abbrechen
               </button>
               <button
                 type="submit"
@@ -1593,12 +1579,12 @@ export const UserDashboard = () => {
                 {uploadingDocument ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Uploading...
+                    Hochladen…
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4" />
-                    Upload Document
+                    Dokument hochladen
                   </>
                 )}
               </button>
@@ -1613,7 +1599,7 @@ export const UserDashboard = () => {
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                 <FileText className="w-6 h-6 text-blue-600" />
-                View Form Submission
+                Formulareinreichung ansehen
               </h2>
               <button
                 onClick={() => {
@@ -1629,15 +1615,15 @@ export const UserDashboard = () => {
             <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Section</p>
+                  <p className="text-sm text-gray-600 mb-1">Abschnitt</p>
                   <p className="text-lg font-semibold text-gray-800">{viewingForm.section}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Submitted By</p>
+                  <p className="text-sm text-gray-600 mb-1">Eingereicht von</p>
                   <p className="text-lg font-semibold text-gray-800">{getUsername(viewingForm.submitted_by)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Submitted At</p>
+                  <p className="text-sm text-gray-600 mb-1">Eingereicht am</p>
                   <p className="text-lg font-semibold text-gray-800">
                     {new Date(viewingForm.submitted_at).toLocaleDateString('en-US', {
                       day: '2-digit',
@@ -1659,12 +1645,12 @@ export const UserDashboard = () => {
                     {viewingForm.locked ? (
                       <>
                         <Lock className="w-4 h-4" />
-                        Locked
+                        Gesperrt
                       </>
                     ) : (
                       <>
                         <Unlock className="w-4 h-4" />
-                        Editable
+                        Bearbeitbar
                       </>
                     )}
                   </span>
@@ -1715,7 +1701,7 @@ export const UserDashboard = () => {
                 }}
                 className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
               >
-                Close
+                Schließen
               </button>
             </div>
           </div>
