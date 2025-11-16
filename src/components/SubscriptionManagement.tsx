@@ -25,7 +25,7 @@ interface Subscription {
 }
 
 const SubscriptionManagement = () => {
-  const { user } = useContext(AuthContext);
+  const { } = useContext(AuthContext);
   const navigate = useNavigate();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);

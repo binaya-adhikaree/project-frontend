@@ -72,6 +72,7 @@ const SubscriptionSuccess = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Zahlung wird verarbeitet
           </h2>
+          {success ? "" : ""}
           <p className="text-gray-600 mb-6">{error}</p>
           <div className="space-y-3">
             <button
