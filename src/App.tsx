@@ -16,6 +16,7 @@ import Pricing from "./pages/Pricing";
 import Problems from "./pages/Problems";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionManagement from "./components/SubscriptionManagement";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function MainLayout() {
 
   const publicRoutesWithNavbar = ["/", "/home", "/about", "/contact", "/problems", "/login"];
   const shouldShowPublicNavbar = publicRoutesWithNavbar.includes(location.pathname) && !user;
+const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !user;
 
   const shouldShowAuthNavbar = user !== null;
 
@@ -195,6 +197,8 @@ function MainLayout() {
           }
         />
       </Routes>
+
+         {shouldShowFooter && <Footer />}
     </>
   );
 }
