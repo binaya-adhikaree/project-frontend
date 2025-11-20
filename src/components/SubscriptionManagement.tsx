@@ -170,7 +170,7 @@ const SubscriptionManagement = () => {
         </div>
 
        
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border-t-4 border-indigo-600">
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border-t-4 border-yellow-600">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Aktuelles Abonnement</h2>

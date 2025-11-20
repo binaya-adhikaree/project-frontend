@@ -701,7 +701,7 @@ const ExternalDashboard: React.FC = () => {
                   <button
                     onClick={() => setActiveTab('documents')}
                     className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'documents'
-                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      ? 'border-b-2 border-yellow-600 text-yellow-600'
                       : 'text-gray-500 hover:text-gray-700'
                       }`}
                   >
@@ -711,7 +711,7 @@ const ExternalDashboard: React.FC = () => {
                   <button
                     onClick={() => setActiveTab('forms')}
                     className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'forms'
-                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      ? 'border-b-2 border-yellow-600 text-yellow-600'
                       : 'text-gray-500 hover:text-gray-700'
                       }`}
                   >
@@ -721,7 +721,7 @@ const ExternalDashboard: React.FC = () => {
                   <button
                     onClick={() => setActiveTab('upload')}
                     className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'upload'
-                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      ? 'border-b-2 border-yellow-600 text-yellow-600'
                       : 'text-gray-500 hover:text-gray-700'
                       }`}
                   >
@@ -736,7 +736,7 @@ const ExternalDashboard: React.FC = () => {
                       setNewFormSection('');
                     }}
                     className={`px-6 py-4 text-sm font-medium whitespace-nowrap ${activeTab === 'create-form'
-                      ? 'border-b-2 border-blue-600 text-blue-600'
+                      ? 'border-b-2 border-yellow-600 text-yellow-600'
                       : 'text-gray-500 hover:text-gray-700'
                       }`}
                   >
@@ -756,7 +756,7 @@ const ExternalDashboard: React.FC = () => {
                         <p className="text-gray-500 text-lg mb-2">Noch keine Dokumente hochgeladen.</p>
                         <button
                           onClick={() => setActiveTab('upload')}
-                          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                          className="mt-4 bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
                         >
                           Laden Sie Ihr erstes Dokument hoch
                         </button>
@@ -950,7 +950,7 @@ const ExternalDashboard: React.FC = () => {
                       <button
                         type="submit"
                         disabled={uploading}
-                        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
+                        className="w-full bg-[#DFA927] hover:bg-[#C89320] cursor-pointer text-white px-6 py-3 rounded-lg  disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
                       >
                         <Upload className="w-5 h-5 mr-2" />
                         {uploading ? 'Uploading...' : 'Upload Document'}
@@ -991,7 +991,7 @@ const ExternalDashboard: React.FC = () => {
                     {newFormSection && Object.keys(formData).length === 0 && (
                       <button
                         onClick={handleCreateForm}
-                        className="mb-6 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="mb-6 text-white px-6 py-2 rounded-lg bg-[#DFA927] hover:bg-[#C89320]transition-colors"
                       >
                         Formularfelder initialisieren
                       </button>

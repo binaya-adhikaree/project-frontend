@@ -162,7 +162,7 @@ const Pricing = () => {
 
         {fetchingSubscription ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
             <p className="mt-4 text-gray-600">Abonnementstatus wird geladen...</p>
           </div>
         ) : (
@@ -212,7 +212,7 @@ const Pricing = () => {
             </div>
 
 
-            <div className="relative bg-white rounded-2xl shadow-xl p-8 ring-2 ring-indigo-600 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            <div className="relative bg-white rounded-2xl shadow-xl p-8 ring-2 ring-yellow-600 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
               <div className="absolute top-0 right-8 transform -translate-y-1/2">
                 <span className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                   Bester Wert

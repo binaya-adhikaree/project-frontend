@@ -613,13 +613,13 @@ export const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border-l-4 border-indigo-600">
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border-l-4 border-yellow-500">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
                 {isGastronom ? (
                   <>
-                    <Building2 className="w-8 h-8 text-indigo-600" />
+                    <Building2 className="w-8 h-8 text-yellow-500" />
                     Dashboard für Gastronomen
                   </>
                 ) : (
@@ -639,7 +639,7 @@ export const UserDashboard = () => {
             <button
               onClick={() => fetchData(true)}
               disabled={refreshing}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-md disabled:opacity-50"
+              className="flex items-center gap-2 bg-[#DFA927] hover:bg-[#C89320] text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-md disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh
@@ -706,7 +706,7 @@ export const UserDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Gesamtformulare</p>
@@ -715,11 +715,11 @@ export const UserDashboard = () => {
                       {stats.lockedForms} locked
                     </p>
                   </div>
-                  <FileText className="w-12 h-12 text-blue-500 opacity-80" />
+                  <FileText className="w-12 h-12 text-yellow-500 opacity-80" />
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Gesamtdokumente</p>
@@ -728,14 +728,14 @@ export const UserDashboard = () => {
                       {stats.lockedDocuments} Gesperrt
                     </p>
                   </div>
-                  <Upload className="w-12 h-12 text-green-500 opacity-80" />
+                  <Upload className="w-12 h-12 text-yellow-500 opacity-80" />
                 </div>
               </div>
 
 
 
               {isGastronom && (
-                <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Aktiver Zugriff</p>
@@ -744,7 +744,7 @@ export const UserDashboard = () => {
                         of {stats.totalAccess}Gesamt
                       </p>
                     </div>
-                    <Users className="w-12 h-12 text-purple-500 opacity-80" />
+                    <Users className="w-12 h-12 text-yellow-500 opacity-80" />
                   </div>
                 </div>
               )}
@@ -755,36 +755,36 @@ export const UserDashboard = () => {
                 <button
                   onClick={() => setActiveTab("overview")}
                   className={`flex-1 px-6 py-4 font-semibold transition-all ${activeTab === "overview"
-                    ? "text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50"
+                    ? "text-yellow-600 border-b-2 border-yellow-600 bg-indigo-50"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                     }`}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Building2 className="w-5 h-5" />
+                    <Building2 className="w-5 h-5 text-yellow-500" />
                     Übersicht
                   </div>
                 </button>
                 <button
                   onClick={() => setActiveTab("forms")}
                   className={`flex-1 px-6 py-4 font-semibold transition-all ${activeTab === "forms"
-                    ? "text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50"
+                    ? "text-yellow-600 border-b-2 border-yellow-600 bg-indigo-50"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                     }`}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <FileText className="w-5 h-5" />
+                    <FileText className="w-5 h-5 text-yellow-500" />
                     Formulare ({stats.totalForms})
                   </div>
                 </button>
                 <button
                   onClick={() => setActiveTab("documents")}
                   className={`flex-1 px-6 py-4 font-semibold transition-all ${activeTab === "documents"
-                    ? "text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50"
+                    ? "text-yellow-600 border-b-2 border-yellow-600 bg-indigo-50"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                     }`}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <Upload className="w-5 h-5" />
+                    <Upload className="w-5 h-5 text-yellow-500" />
                     Dokumente ({stats.totalDocuments})
                   </div>
                 </button>
@@ -792,12 +792,12 @@ export const UserDashboard = () => {
                   <button
                     onClick={() => setActiveTab("access")}
                     className={`flex-1 px-6 py-4 font-semibold transition-all ${activeTab === "access"
-                      ? "text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50"
+                      ? "text-yellow-600 border-b-2 border-yellow-600 bg-indigo-50"
                       : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <Users className="w-5 h-5" />
+                      <Users className="w-5 h-5 text-yellow-500" />
                       Zugriff ({stats.activeAccess})
                     </div>
                   </button>
@@ -820,7 +820,7 @@ export const UserDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
                       onClick={() => setActiveTab("forms")}
-                      className="bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-6 rounded-xl shadow-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-1">
+                      className="  bg-[#DFA927] hover:bg-[#C89320] text-white p-6 rounded-xl shadow-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-1">
                       <FileText className="w-12 h-12 mx-auto mb-3" />
                       <span className="block text-lg">Formulare ausfüllen</span>
                       <p className="text-sm opacity-90 mt-2">Erforderliche Dokumentation abschließen</p>
@@ -895,7 +895,7 @@ export const UserDashboard = () => {
                     <h3 className="text-2xl font-bold text-gray-800">Formularübermittlungen</h3>
                     <button
                       onClick={() => setShowFormModal(true)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
+                      className="bg-[#DFA927] hover:bg-[#C89320] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
                       <FileText className="w-4 h-4" />
                       Neues Formular
                     </button>
@@ -907,7 +907,7 @@ export const UserDashboard = () => {
                       <p className="text-gray-500 text-lg">Für diesen Standort wurden noch keine Formulare eingereicht.</p>
                       <button
                         onClick={() => setShowFormModal(true)}
-                        className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold">
+                        className="mt-4 bg-[#DFA927] hover:bg-[#C89320] text-white px-6 py-2 rounded-lg font-semibold">
                         Reichen Sie Ihr erstes Formular ein
                       </button>
                     </div>
@@ -995,7 +995,7 @@ export const UserDashboard = () => {
                     <h3 className="text-2xl font-bold text-gray-800">Dokumenten-Uploads</h3>
                     <button
                       onClick={() => setShowDocumentModal(true)}
-                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
+                      className="bg-[#DFA927] hover:bg-[#C89320] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md">
                       <Upload className="w-4 h-4" />
                       Dokument hochladen
                     </button>
@@ -1007,7 +1007,7 @@ export const UserDashboard = () => {
                       <p className="text-gray-500 text-lg">Für diesen Standort wurden noch keine Dokumente hochgeladen.</p>
                       <button
                         onClick={() => setShowDocumentModal(true)}
-                        className="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold">
+                        className="mt-4 bg-[#DFA927] hover:bg-[#C89320] text-white px-6 py-2 rounded-lg font-semibold">
                         Laden Sie Ihr erstes Dokument hoch
                       </button>
                     </div>
@@ -1108,7 +1108,7 @@ export const UserDashboard = () => {
                     <h3 className="text-2xl font-bold text-gray-800">Zugriff für externe Firmen</h3>
                     <button
                       onClick={() => setShowGrantAccessModal(true)}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md"
+                      className="bg-[#DFA927] hover:bg-[#C89320] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition-all shadow-md"
                     >
                       <Users className="w-4 h-4" />
                       Zugriff gewähren
@@ -1315,7 +1315,7 @@ export const UserDashboard = () => {
                   setShowGrantAccessModal(false);
                   setSelectedExternalUser("");
                 }}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                className="bg-gray-400 hover:bg-gray-500 cursor-pointer text-white px-6 py-2 rounded-lg font-semibold transition-all"
               >
                 Abbrechen
               </button>
@@ -1339,7 +1339,7 @@ export const UserDashboard = () => {
             className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-3xl my-8"
           >
             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-              <FileText className="w-6 h-6 text-blue-600" />
+              <FileText className="w-6 h-6 text-yellow-600" />
               Neues Formular einrei
             </h2>
 
@@ -1353,7 +1353,7 @@ export const UserDashboard = () => {
                   setFormSection(e.target.value);
                   setFormData({});
                 }}
-                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
                 required
               >
                 <option value=""> Abschnitt auswählen </option>
@@ -1454,7 +1454,7 @@ export const UserDashboard = () => {
               <button
                 type="submit"
                 disabled={!formSection || submittingForm}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                className="bg-[#DFA927] hover:bg-[#C89320] text-white px-6 py-2 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
               >
                 {submittingForm ? (
                   <>
@@ -1491,7 +1491,7 @@ export const UserDashboard = () => {
               <select
                 value={documentSection}
                 onChange={(e) => setDocumentSection(e.target.value)}
-                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
                 required
               >
                 <option value=""> Bereich auswählen </option>
@@ -1510,7 +1510,7 @@ export const UserDashboard = () => {
               <input
                 type="file"
                 onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
-                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                className="w-full border-2 border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
                 accept=".pdf,.jpg,.jpeg,.png"
                 required
               />
@@ -1575,7 +1575,7 @@ export const UserDashboard = () => {
               <button
                 type="submit"
                 disabled={!documentSection || !documentFile || uploadingDocument}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                className="bg-[#DFA927] hover:bg-[#C89320] cursor-pointer text-white px-6 py-2 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center gap-2"
               >
                 {uploadingDocument ? (
                   <>
@@ -1700,7 +1700,7 @@ export const UserDashboard = () => {
                   setShowViewFormModal(false);
                   setViewingForm(null);
                 }}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold transition-all"
+                className="bg-[#DFA927] hover:bg-[#C89320] cursor-pointer text-white px-6 py-2 rounded-lg font-semibold transition-all"
               >
                 Schließen
               </button>

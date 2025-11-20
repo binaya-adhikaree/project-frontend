@@ -144,6 +144,7 @@ export const AdminDashboard = () => {
     assigned_location: "",
   });
 
+
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [editingUser, setEditingUser] = useState<any>({});
 
@@ -1057,7 +1058,6 @@ export const AdminDashboard = () => {
 
       {activeTab === "users" && (
         <>
-
           <div className="mb-8 border border-yellow-400 p-6 rounded-lg bg-yellow-50 shadow-md">
             <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Neuen Benutzer erstellen</h2>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateUser}>
@@ -1160,10 +1160,13 @@ export const AdminDashboard = () => {
             </form>
           </div>
 
-
           <div className="bg-white border rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">Alle Benutzer ({users.length})</h2>
-            <div className="overflow-x-auto">
+            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
+              Alle Benutzer ({users.length})
+            </h2>
+
+            
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
@@ -1186,10 +1189,10 @@ export const AdminDashboard = () => {
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                            ? "bg-red-100 text-red-800"
-                            : u.role === "GASTRONOM"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
+                              ? "bg-red-100 text-red-800"
+                              : u.role === "GASTRONOM"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
                             }`}
                         >
                           {u.role}
@@ -1220,9 +1223,75 @@ export const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile Card View */}
+            <div className="lg:hidden">
+              {users.map((u) => (
+                <div key={u.id} className="p-4 border-b hover:bg-gray-50">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-lg">{u.first_name} {u.last_name}</p>
+                        <p className="text-sm text-gray-600">@{u.username}</p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
+                            ? "bg-red-100 text-red-800"
+                            : u.role === "GASTRONOM"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                      >
+                        {u.role}
+                      </span>
+                    </div>
+
+                    <div className="text-sm space-y-1">
+                      <p className="text-gray-700">
+                        <span className="font-semibold">E-Mail:</span> {u.email}
+                      </p>
+                      {u.phone && (
+                        <p className="text-gray-700">
+                          <span className="font-semibold">Telefon:</span> {u.phone}
+                        </p>
+                      )}
+                      {u.company_name && (
+                        <p className="text-gray-700">
+                          <span className="font-semibold">Firma:</span> {u.company_name}
+                        </p>
+                      )}
+                      {u.assigned_location && (
+                        <p className="text-gray-700">
+                          <span className="font-semibold">Standort:</span> {u.assigned_location}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded text-sm font-semibold"
+                        onClick={() => {
+                          setEditingUserId(u.id);
+                          setEditingUser(u);
+                        }}
+                      >
+                        Bearbeiten
+                      </button>
+                      <button
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                        onClick={() => handleDeleteUser(u.id)}
+                      >
+                        Löschen
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}
+
 
       {activeTab === "locations" && (
         <>
