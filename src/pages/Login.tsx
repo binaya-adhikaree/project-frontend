@@ -8,12 +8,15 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true)
 
     try {
       await login(username, password);
@@ -28,6 +31,8 @@ export default function Login() {
       }
     } catch {
       alert("Invalid credentials");
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -74,9 +79,18 @@ export default function Login() {
 
           <button
             type="submit"
-            className="mt-4 bg-[#DFA927] hover:bg-[#c4901f] cursor-pointer text-white font-semibold py-2.5 rounded-lg shadow transition-all duration-200"
+            disabled={loading}
+            className="mt-4 bg-[#DFA927] hover:bg-[#c4901f] disabled:opacity-70 disabled:cursor-not-allowed 
+             cursor-pointer text-white font-semibold py-2.5 rounded-lg shadow transition-all duration-200 flex items-center justify-center"
           >
-            Login
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
       </div>

@@ -1227,7 +1227,7 @@ export const AdminDashboard = () => {
       {activeTab === "locations" && (
         <>
 
-          <div className="mb-8 border border-blue-400 p-6 rounded-lg bg-blue-50 shadow-md">
+          <div className="mb-8 border border-blue-400 p-6 rounded-lg bg-yellow-50 shadow-md">
             <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Neuen Standort erstellen</h2>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateLocation}>
               <input
