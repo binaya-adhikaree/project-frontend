@@ -14,7 +14,6 @@ export default function PrivateRoute({ role, children }: Props) {
   if (!user) return <Navigate to="/login" />;
 
   if (user.role !== role) {
-    // Redirect to correct dashboard if role mismatches
     if (user.role === "GASTRONOM") return <Navigate to="/user" />;
     if (user.role === "ADMIN") return <Navigate to="/admin" />;
 

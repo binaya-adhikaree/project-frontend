@@ -5,7 +5,7 @@ const About = () => {
   return (
     <div className="min-h-[calc(100vh-5rem)] bg-[#ECECEC]">
       <div className="container mx-auto px-6 py-12">
-      
+
         <div className="text-center mb-16">
           <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Über GreaseLog
@@ -15,7 +15,7 @@ const About = () => {
           </p>
         </div>
 
-       
+
         <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mb-12">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
             <div className="lg:w-1/2">
@@ -45,8 +45,8 @@ const About = () => {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -59,8 +59,8 @@ const About = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -73,8 +73,8 @@ const About = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                 </svg>
               </div>
@@ -87,8 +87,8 @@ const About = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
@@ -101,8 +101,8 @@ const About = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
@@ -115,8 +115,8 @@ const About = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition">
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 bg-[#DFA927] rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
@@ -130,7 +130,7 @@ const About = () => {
           </div>
         </div>
 
-   
+
         <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
             Unsere Geschichte
@@ -148,7 +148,7 @@ const About = () => {
           </div>
         </div>
 
-    
+
         <div className="mb-16">
           <h2 className="text-4xl font-bold text-gray-900 text-center mb-12">
             Unsere Werte
@@ -192,7 +192,7 @@ const About = () => {
           </div>
         </div>
 
-    
+
       </div>
     </div>
   );

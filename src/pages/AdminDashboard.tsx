@@ -1272,7 +1272,7 @@ export const AdminDashboard = () => {
               />
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded font-semibold transition-all shadow-md"
+                className="bg-[#DFA927] hover:bg-[#c4901f] cursor-pointer text-white p-2 rounded font-semibold transition-all shadow-md"
               >
                 Standort erstellen
               </button>

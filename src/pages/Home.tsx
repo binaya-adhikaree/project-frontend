@@ -18,7 +18,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/login"
-              className="inline-block bg-indigo-600 text-white px-10 py-4 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg text-lg"
+              className="inline-block bg-[#DFA927] text-white px-10 py-4 rounded-lg font-semibold hover:bg-[#c4901f] transition shadow-lg text-lg"
             >
               Loslegen
             </Link>
@@ -32,12 +32,12 @@ export default function Home() {
               Compliance vereinfachen und Abläufe optimieren
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-            Willkommen bei GreaseLog – Ihre Lösung für die unkomplizierte Verwaltung von Fettfangvorrichtungen. Verabschieden Sie sich von verlorenen Unterlagen und manuellen Fehlern und freuen Sie sich auf mühelose Einhaltung von Vorschriften und Sicherheit.
+              Willkommen bei GreaseLog – Ihre Lösung für die unkomplizierte Verwaltung von Fettfangvorrichtungen. Verabschieden Sie sich von verlorenen Unterlagen und manuellen Fehlern und freuen Sie sich auf mühelose Einhaltung von Vorschriften und Sicherheit.
             </p>
             <p className="text-lg text-gray-600 leading-relaxed">
-           Unsere digitale Plattform ermöglicht es Ihnen, Entsorgungsnachweise einfach einzutragen, monatliche Selbstkontrollen durchzuführen und jederzeit auf historische Daten zuzugreifen – egal wo Sie sind. Optimieren Sie die Zusammenarbeit mit Ihrem Team und Ihren Lieferanten und stellen Sie gleichzeitig die Einhaltung gesetzlicher Vorschriften sicher.
+              Unsere digitale Plattform ermöglicht es Ihnen, Entsorgungsnachweise einfach einzutragen, monatliche Selbstkontrollen durchzuführen und jederzeit auf historische Daten zuzugreifen – egal wo Sie sind. Optimieren Sie die Zusammenarbeit mit Ihrem Team und Ihren Lieferanten und stellen Sie gleichzeitig die Einhaltung gesetzlicher Vorschriften sicher.
             </p>
-            <p className="text-lg font-semibold text-indigo-600 pt-2">
+            <p className="text-lg font-semibold text-[#DFA927] pt-2">
               Ready to revolutionize your grease trap management?
             </p>
           </div>
@@ -50,7 +50,7 @@ export default function Home() {
           </div>
         </div>
 
-       
+
         <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-12 mt-16 mb-12">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
             <div className="lg:w-2/5">

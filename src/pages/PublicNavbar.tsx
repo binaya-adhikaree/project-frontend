@@ -57,7 +57,7 @@ function PublicNavbar() {
             </Link>
             <Link
               to="/login"
-              className="bg-indigo-600 text-white px-7 py-2.5 rounded-lg hover:bg-indigo-700 transition-all duration-200 font-semibold inline-flex items-center shadow-md hover:shadow-lg"
+              className="bg-[#DFA927] text-white px-7 py-2.5 rounded-lg hover:bg-[#c4901f] transition-all duration-200 font-semibold inline-flex items-center shadow-md hover:shadow-lg"
             >
               Anmeldung
             </Link>
