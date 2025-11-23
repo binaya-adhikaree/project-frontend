@@ -636,9 +636,8 @@ export const AdminDashboard = () => {
           </div>
         ) : (
           <>
-
             <div className="mb-8 bg-white border rounded-2xl shadow-xl overflow-hidden">
-              <div className="bg-linear-to-r from-blue-500 to-indigo-600 p-6">
+              <div className="bg-yellow-600 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <FileText className="w-6 h-6" />
                   Formularübermittlungen ({locationForms.length})
@@ -699,7 +698,7 @@ export const AdminDashboard = () => {
                             className="p-2 hover:bg-yellow-100 rounded-lg transition-colors"
                             title="Edit Form"
                           >
-                            <Edit className="w-5 h-5 text-yellow-600" />
+                            <Edit className="w-5 h-5 text-yellow-500" />
                           </button>
                           <button
                             onClick={() => handleToggleFormLock(form.id)}
@@ -732,7 +731,7 @@ export const AdminDashboard = () => {
 
 
             <div className="bg-white border rounded-2xl shadow-xl overflow-hidden">
-              <div className="bg-linear-to-r from-purple-500 to-pink-600 p-6">
+              <div className="bg-yellow-500 p-6">
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                   <UploadIcon className="w-6 h-6" />
                   Dokumente ({locationDocuments.length})
