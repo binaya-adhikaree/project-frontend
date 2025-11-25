@@ -106,7 +106,7 @@ export default function AboutPage() {
         </div>
 
         <div className="mb-16">
-          <div className="bg-linear-to-to-br from-orange-600 to-amber-700 rounded-2xl shadow-2xl p-8 md:p-12 text-white">
+          <div className="bg-yellow-600 rounded-2xl shadow-2xl p-8 md:p-12 text-white">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 flex items-center gap-3">
               <FileText className="w-10 h-10" />
               Warum wir das digitale Betriebstagebuch entwickelt haben

@@ -97,6 +97,8 @@ const getFormFields = (section: string) => {
   return formConfigs[section] || [];
 };
 
+
+
 const getUsername = (user: string | { username: string; first_name?: string; last_name?: string }): string => {
   if (typeof user === 'string') return user;
   if (user?.first_name && user?.last_name) {
@@ -145,7 +147,12 @@ export const AdminDashboard = () => {
   });
 
 
-  // pagination and filtering 
+
+  const [locationSearchTerm, setLocationSearchTerm] = useState('');
+  const [operatorFilter, setOperatorFilter] = useState<string>('ALL');
+  const [currentLocationPage, setCurrentLocationPage] = useState(1);
+  const [locationItemsPerPage] = useState(10);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
 
@@ -254,7 +261,40 @@ export const AdminDashboard = () => {
     setLocationForms([]);
   };
 
+  const handleLocationSearchChange = (value: string) => {
+    setLocationSearchTerm(value);
+    setCurrentLocationPage(1);
+  };
 
+  const handleOperatorFilterChange = (value: string) => {
+    setOperatorFilter(value);
+    setCurrentLocationPage(1);
+  };
+
+
+  const filteredLocations = locations.filter((location) => {
+    const matchesSearch =
+      location.name.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+      location.location_id.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+      location.address.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+      location.city.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+      location.postal_code.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+      (location.current_operator?.username.toLowerCase().includes(locationSearchTerm.toLowerCase()) || false) ||
+      (location.current_operator?.first_name.toLowerCase().includes(locationSearchTerm.toLowerCase()) || false) ||
+      (location.current_operator?.last_name.toLowerCase().includes(locationSearchTerm.toLowerCase()) || false);
+
+    const matchesOperator =
+      operatorFilter === 'ALL' ||
+      (operatorFilter === 'ASSIGNED' && location.current_operator) ||
+      (operatorFilter === 'UNASSIGNED' && !location.current_operator);
+
+    return matchesSearch && matchesOperator;
+  });
+
+  const indexOfLastLocation = currentLocationPage * locationItemsPerPage;
+  const indexOfFirstLocation = indexOfLastLocation - locationItemsPerPage;
+  const currentLocations = filteredLocations.slice(indexOfFirstLocation, indexOfLastLocation);
+  const totalLocationPages = Math.ceil(filteredLocations.length / locationItemsPerPage);
 
   const handleToggleDocumentLock = async (docId: number) => {
     try {
@@ -601,7 +641,7 @@ export const AdminDashboard = () => {
   }
 
   const filteredUsers = users.filter((user) => {
-    const matchesSearch = 
+    const matchesSearch =
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -613,11 +653,12 @@ export const AdminDashboard = () => {
   });
 
 
-  // PAGINATION LOGIC
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+
 
 
   const handlePageChange = (pageNumber: number) => {
@@ -1209,10 +1250,8 @@ export const AdminDashboard = () => {
                 Alle Benutzer ({filteredUsers.length})
               </h2>
 
-              {/* Filters Section */}
               <div className="p-4 bg-gray-50 border-b space-y-3">
                 <div className="flex flex-col md:flex-row gap-3">
-                  {/* Search Input */}
                   <div className="flex-1">
                     <input
                       type="text"
@@ -1223,7 +1262,6 @@ export const AdminDashboard = () => {
                     />
                   </div>
 
-                  {/* Role Filter Dropdown */}
                   <div className="md:w-48">
                     <select
                       value={roleFilter}
@@ -1289,10 +1327,10 @@ export const AdminDashboard = () => {
                           <td className="p-3">
                             <span
                               className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                                  ? "bg-red-100 text-red-800"
-                                  : u.role === "GASTRONOM"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-blue-100 text-blue-800"
+                                ? "bg-red-100 text-red-800"
+                                : u.role === "GASTRONOM"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-blue-100 text-blue-800"
                                 }`}
                             >
                               {u.role}
@@ -1342,10 +1380,10 @@ export const AdminDashboard = () => {
                           </div>
                           <span
                             className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                                ? "bg-red-100 text-red-800"
-                                : u.role === "GASTRONOM"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-blue-100 text-blue-800"
+                              ? "bg-red-100 text-red-800"
+                              : u.role === "GASTRONOM"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
                               }`}
                           >
                             {u.role}
@@ -1424,8 +1462,8 @@ export const AdminDashboard = () => {
                             key={pageNum}
                             onClick={() => handlePageChange(pageNum)}
                             className={`px-3 py-1 border rounded ${currentPage === pageNum
-                                ? 'bg-blue-500 text-white'
-                                : 'hover:bg-gray-100'
+                              ? 'bg-blue-500 text-white'
+                              : 'hover:bg-gray-100'
                               }`}
                           >
                             {pageNum}
@@ -1511,11 +1549,57 @@ export const AdminDashboard = () => {
             </form>
           </div>
 
-
           <div className="bg-white border rounded-lg shadow-md overflow-hidden">
             <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
-              Alle Standorte({locations.length})
+              Alle Standorte ({filteredLocations.length})
             </h2>
+
+            {/* Search and Filter Section */}
+            <div className="p-4 bg-gray-50 border-b space-y-3">
+              <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="Suche nach Name, Standort-ID, Adresse, Stadt, Betreiber..."
+                    value={locationSearchTerm}
+                    onChange={(e) => handleLocationSearchChange(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="md:w-48">
+                  <select
+                    value={operatorFilter}
+                    onChange={(e) => handleOperatorFilterChange(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="ALL">Alle Standorte</option>
+                    <option value="ASSIGNED">Mit Betreiber</option>
+                    <option value="UNASSIGNED">Ohne Betreiber</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Active Filters Display */}
+              {(locationSearchTerm || operatorFilter !== 'ALL') && (
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-sm text-gray-600">Aktive Filter:</span>
+                  {locationSearchTerm && (
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-1">
+                      Suche: "{locationSearchTerm}"
+                      <button onClick={() => handleLocationSearchChange('')} className="hover:text-blue-900">×</button>
+                    </span>
+                  )}
+                  {operatorFilter !== 'ALL' && (
+                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-1">
+                      Status: {operatorFilter === 'ASSIGNED' ? 'Mit Betreiber' : 'Ohne Betreiber'}
+                      <button onClick={() => handleOperatorFilterChange('ALL')} className="hover:text-green-900">×</button>
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -1529,72 +1613,134 @@ export const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {locations.map((loc) => (
-                    <tr key={loc.id} className="hover:bg-gray-50 border-b">
-                      <td className="p-3 font-semibold">
-                        <button
-                          onClick={() => handleViewLocation(loc)}
-                          className="text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                          {loc.name}
-                        </button>
-                      </td>
-                      <td className="p-3">
-                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-mono">
-                          {loc.location_id}
-                        </span>
-                      </td>
-                      <td className="p-3">{loc.address}</td>
-                      <td className="p-3">{loc.city}, {loc.postal_code}</td>
-                      <td className="p-3">
-                        {loc.current_operator ? (
-                          <div>
-                            <p className="font-semibold">
-                              {loc.current_operator.first_name} {loc.current_operator.last_name}
-                            </p>
-                            <p className="text-xs text-gray-500">@{loc.current_operator.username}</p>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400 italic">Nicht zugewiesen</span>
-                        )}
-                      </td>
-                      <td className="p-3 space-x-2">
-                        <button
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => handleViewLocation(loc)}
-                        >
-                          Details anzeigen
-                        </button>
-                        <button
-                          className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => {
-                            setAssigningLocationId(loc.id);
-                            setShowAssignModal(true);
-                          }}
-                        >
-                          Zuweisen
-                        </button>
-                        <button
-                          className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => {
-                            setEditingLocationId(loc.id);
-                            setEditingLocation(loc);
-                          }}
-                        >
-                          Bearbeiten
-                        </button>
-                        <button
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => handleDeleteLocation(loc.id)}
-                        >
-                          Löschen
-                        </button>
+                  {currentLocations.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-gray-500">
+                        Keine Standorte gefunden
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    currentLocations.map((loc) => (
+                      <tr key={loc.id} className="hover:bg-gray-50 border-b">
+                        <td className="p-3 font-semibold">
+                          <button
+                            onClick={() => handleViewLocation(loc)}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {loc.name}
+                          </button>
+                        </td>
+                        <td className="p-3">
+                          <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm font-mono">
+                            {loc.location_id}
+                          </span>
+                        </td>
+                        <td className="p-3">{loc.address}</td>
+                        <td className="p-3">{loc.city}, {loc.postal_code}</td>
+                        <td className="p-3">
+                          {loc.current_operator ? (
+                            <div>
+                              <p className="font-semibold">
+                                {loc.current_operator.first_name} {loc.current_operator.last_name}
+                              </p>
+                              <p className="text-xs text-gray-500">@{loc.current_operator.username}</p>
+                            </div>
+                          ) : (
+                            <span className="text-gray-400 italic">Nicht zugewiesen</span>
+                          )}
+                        </td>
+                        <td className="p-3 space-x-2">
+                          <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                            onClick={() => handleViewLocation(loc)}
+                          >
+                            Details anzeigen
+                          </button>
+                          <button
+                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                            onClick={() => {
+                              setAssigningLocationId(loc.id);
+                              setShowAssignModal(true);
+                            }}
+                          >
+                            Zuweisen
+                          </button>
+                          <button
+                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
+                            onClick={() => {
+                              setEditingLocationId(loc.id);
+                              setEditingLocation(loc);
+                            }}
+                          >
+                            Bearbeiten
+                          </button>
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                            onClick={() => handleDeleteLocation(loc.id)}
+                          >
+                            Löschen
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination */}
+            {filteredLocations.length > 0 && (
+              <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="text-sm text-gray-600">
+                  Zeige {indexOfFirstLocation + 1} bis {Math.min(indexOfLastLocation, filteredLocations.length)} von {filteredLocations.length} Standorten
+                </div>
+
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setCurrentLocationPage(currentLocationPage - 1)}
+                    disabled={currentLocationPage === 1}
+                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    ‹
+                  </button>
+
+                  {Array.from({ length: totalLocationPages }, (_, i) => i + 1).map((pageNum) => {
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalLocationPages ||
+                      (pageNum >= currentLocationPage - 1 && pageNum <= currentLocationPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentLocationPage(pageNum)}
+                          className={`px-3 py-1 border rounded ${currentLocationPage === pageNum
+                              ? 'bg-blue-500 text-white'
+                              : 'hover:bg-gray-100'
+                            }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (
+                      pageNum === currentLocationPage - 2 ||
+                      pageNum === currentLocationPage + 2
+                    ) {
+                      return <span key={pageNum} className="px-2">...</span>;
+                    }
+                    return null;
+                  })}
+
+                  <button
+                    onClick={() => setCurrentLocationPage(currentLocationPage + 1)}
+                    disabled={currentLocationPage === totalLocationPages}
+                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    ›
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
