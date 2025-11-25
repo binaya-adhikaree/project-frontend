@@ -9,7 +9,7 @@ interface User {
   email: string;
   first_name: string;
   last_name: string;
-  role: string;
+  role: 'ADMIN' | "GASTRONOM" | "EXTERNAL";
   phone?: string;
   company_name?: string;
   assigned_location?: number | null;
@@ -145,6 +145,16 @@ export const AdminDashboard = () => {
   });
 
 
+  // pagination and filtering 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('ALL');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+
+
+
+
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [editingUser, setEditingUser] = useState<any>({});
 
@@ -178,6 +188,8 @@ export const AdminDashboard = () => {
     await Promise.all([fetchUsers(), fetchLocations()]);
     setLoading(false);
   };
+
+
 
   const fetchUsers = async () => {
     try {
@@ -588,6 +600,40 @@ export const AdminDashboard = () => {
     );
   }
 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = 
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+
+    const matchesRole = roleFilter === 'ALL' || user.role === roleFilter;
+
+    return matchesSearch && matchesRole;
+  });
+
+
+  // PAGINATION LOGIC
+  const indexOfLastUser = currentPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleRoleFilterChange = (value: string) => {
+    setRoleFilter(value);
+    setCurrentPage(1);
+  };
 
   if (selectedLocation) {
     return (
@@ -600,8 +646,6 @@ export const AdminDashboard = () => {
           <ArrowLeft className="w-5 h-5" />
           Zurück zu den Standorten
         </button>
-
-
         <div className="bg-linear-to-r from-amber-50 to-yellow-50 rounded-2xl shadow-xl p-6 mb-6 border-2 border-amber-300">
           <h1 className="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             📍 {selectedLocation.name}
@@ -1159,133 +1203,253 @@ export const AdminDashboard = () => {
             </form>
           </div>
 
-          <div className="bg-white border rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
-              Alle Benutzer ({users.length})
-            </h2>
+          <div className="p-4 max-w-7xl mx-auto">
+            <div className="bg-white border rounded-lg shadow-md overflow-hidden">
+              <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
+                Alle Benutzer ({filteredUsers.length})
+              </h2>
 
-            
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="p-3 text-left border-b">Benutzername</th>
-                    <th className="p-3 text-left border-b">E-Mail</th>
-                    <th className="p-3 text-left border-b">Name</th>
-                    <th className="p-3 text-left border-b">Rolle</th>
-                    <th className="p-3 text-left border-b">Telefon</th>
-                    <th className="p-3 text-left border-b">Firma</th>
-                    <th className="p-3 text-left border-b">Standort</th>
-                    <th className="p-3 text-left border-b">Aktionen</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-gray-50 border-b">
-                      <td className="p-3">{u.username}</td>
-                      <td className="p-3">{u.email}</td>
-                      <td className="p-3">{u.first_name} {u.last_name}</td>
-                      <td className="p-3">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                              ? "bg-red-100 text-red-800"
-                              : u.role === "GASTRONOM"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
-                            }`}
-                        >
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="p-3">{u.phone || "-"}</td>
-                      <td className="p-3">{u.company_name || "-"}</td>
-                      <td className="p-3">{u.assigned_location || "-"}</td>
-                      <td className="p-3 space-x-2">
-                        <button
-                          className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => {
-                            setEditingUserId(u.id);
-                            setEditingUser(u);
-                          }}
-                        >
-                          Bearbeiten
-                        </button>
-                        <button
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                          onClick={() => handleDeleteUser(u.id)}
-                        >
-                          Löschen
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+              {/* Filters Section */}
+              <div className="p-4 bg-gray-50 border-b space-y-3">
+                <div className="flex flex-col md:flex-row gap-3">
+                  {/* Search Input */}
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Suche nach Name, E-Mail, Firma, Standort..."
+                      value={searchTerm}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
 
-            {/* Mobile Card View */}
-            <div className="lg:hidden">
-              {users.map((u) => (
-                <div key={u.id} className="p-4 border-b hover:bg-gray-50">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold text-lg">{u.first_name} {u.last_name}</p>
-                        <p className="text-sm text-gray-600">@{u.username}</p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
-                            ? "bg-red-100 text-red-800"
-                            : u.role === "GASTRONOM"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
-                      >
-                        {u.role}
-                      </span>
-                    </div>
-
-                    <div className="text-sm space-y-1">
-                      <p className="text-gray-700">
-                        <span className="font-semibold">E-Mail:</span> {u.email}
-                      </p>
-                      {u.phone && (
-                        <p className="text-gray-700">
-                          <span className="font-semibold">Telefon:</span> {u.phone}
-                        </p>
-                      )}
-                      {u.company_name && (
-                        <p className="text-gray-700">
-                          <span className="font-semibold">Firma:</span> {u.company_name}
-                        </p>
-                      )}
-                      {u.assigned_location && (
-                        <p className="text-gray-700">
-                          <span className="font-semibold">Standort:</span> {u.assigned_location}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2 pt-2">
-                      <button
-                        className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded text-sm font-semibold"
-                        onClick={() => {
-                          setEditingUserId(u.id);
-                          setEditingUser(u);
-                        }}
-                      >
-                        Bearbeiten
-                      </button>
-                      <button
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                        onClick={() => handleDeleteUser(u.id)}
-                      >
-                        Löschen
-                      </button>
-                    </div>
+                  {/* Role Filter Dropdown */}
+                  <div className="md:w-48">
+                    <select
+                      value={roleFilter}
+                      onChange={(e) => handleRoleFilterChange(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="ALL">Alle Rollen</option>
+                      <option value="ADMIN">ADMIN</option>
+                      <option value="GASTRONOM">GASTRONOM</option>
+                      <option value="EXTERNAL">EXTERNAL</option>
+                    </select>
                   </div>
                 </div>
-              ))}
+
+                {/* Active Filters Display */}
+                {(searchTerm || roleFilter !== 'ALL') && (
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <span className="text-sm text-gray-600">Aktive Filter:</span>
+                    {searchTerm && (
+                      <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-1">
+                        Suche: "{searchTerm}"
+                        <button onClick={() => handleSearchChange('')} className="hover:text-blue-900">×</button>
+                      </span>
+                    )}
+                    {roleFilter !== 'ALL' && (
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-1">
+                        Rolle: {roleFilter}
+                        <button onClick={() => handleRoleFilterChange('ALL')} className="hover:text-green-900">×</button>
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="p-3 text-left border-b">Benutzername</th>
+                      <th className="p-3 text-left border-b">E-Mail</th>
+                      <th className="p-3 text-left border-b">Name</th>
+                      <th className="p-3 text-left border-b">Rolle</th>
+                      <th className="p-3 text-left border-b">Telefon</th>
+                      <th className="p-3 text-left border-b">Firma</th>
+                      <th className="p-3 text-left border-b">Standort</th>
+                      <th className="p-3 text-left border-b">Aktionen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentUsers.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="p-8 text-center text-gray-500">
+                          Keine Benutzer gefunden
+                        </td>
+                      </tr>
+                    ) : (
+                      currentUsers.map((u) => (
+                        <tr key={u.id} className="hover:bg-gray-50 border-b">
+                          <td className="p-3">{u.username}</td>
+                          <td className="p-3">{u.email}</td>
+                          <td className="p-3">{u.first_name} {u.last_name}</td>
+                          <td className="p-3">
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
+                                  ? "bg-red-100 text-red-800"
+                                  : u.role === "GASTRONOM"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-blue-100 text-blue-800"
+                                }`}
+                            >
+                              {u.role}
+                            </span>
+                          </td>
+                          <td className="p-3">{u.phone || "-"}</td>
+                          <td className="p-3">{u.company_name || "-"}</td>
+                          <td className="p-3">{u.assigned_location || "-"}</td>
+                          <td className="p-3 space-x-2">
+                            <button
+                              className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
+                              onClick={() => {
+                                setEditingUserId(u.id);
+                                setEditingUser(u);
+                              }}
+                            >
+                              Bearbeiten
+                            </button>
+                            <button
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                              onClick={() => handleDeleteUser(u.id)}
+                            >
+                              Löschen
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="lg:hidden">
+                {currentUsers.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500">
+                    Keine Benutzer gefunden
+                  </div>
+                ) : (
+                  currentUsers.map((u) => (
+                    <div key={u.id} className="p-4 border-b hover:bg-gray-50">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold text-lg">{u.first_name} {u.last_name}</p>
+                            <p className="text-sm text-gray-600">@{u.username}</p>
+                          </div>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-semibold ${u.role === "ADMIN"
+                                ? "bg-red-100 text-red-800"
+                                : u.role === "GASTRONOM"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-blue-100 text-blue-800"
+                              }`}
+                          >
+                            {u.role}
+                          </span>
+                        </div>
+
+                        <div className="text-sm space-y-1">
+                          <p className="text-gray-700">
+                            <span className="font-semibold">E-Mail:</span> {u.email}
+                          </p>
+                          {u.phone && (
+                            <p className="text-gray-700">
+                              <span className="font-semibold">Telefon:</span> {u.phone}
+                            </p>
+                          )}
+                          {u.company_name && (
+                            <p className="text-gray-700">
+                              <span className="font-semibold">Firma:</span> {u.company_name}
+                            </p>
+                          )}
+                          {u.assigned_location && (
+                            <p className="text-gray-700">
+                              <span className="font-semibold">Standort:</span> {u.assigned_location}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <button
+                            className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded text-sm font-semibold"
+                            onClick={() => {
+                              setEditingUserId(u.id);
+                              setEditingUser(u);
+                            }}
+                          >
+                            Bearbeiten
+                          </button>
+                          <button
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
+                            onClick={() => handleDeleteUser(u.id)}
+                          >
+                            Löschen
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Pagination */}
+              {filteredUsers.length > 0 && (
+                <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-sm text-gray-600">
+                    Zeige {indexOfFirstUser + 1} bis {Math.min(indexOfLastUser, filteredUsers.length)} von {filteredUsers.length} Benutzern
+                  </div>
+
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ‹
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        pageNum === 1 ||
+                        pageNum === totalPages ||
+                        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`px-3 py-1 border rounded ${currentPage === pageNum
+                                ? 'bg-blue-500 text-white'
+                                : 'hover:bg-gray-100'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      } else if (
+                        pageNum === currentPage - 2 ||
+                        pageNum === currentPage + 2
+                      ) {
+                        return <span key={pageNum} className="px-2">...</span>;
+                      }
+                      return null;
+                    })}
+
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ›
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </>
