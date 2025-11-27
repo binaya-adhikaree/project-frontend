@@ -1608,8 +1608,8 @@ export const AdminDashboard = () => {
                     <th className="p-3 text-left border-b">Standort-ID</th>
                     <th className="p-3 text-left border-b">Adresse</th>
                     <th className="p-3 text-left border-b">Stadt</th>
-                    <th className="p-3 text-left border-b">Aktueller Betreiber</th>
-                    <th className="p-3 text-left border-b">Aktionen</th>
+                    <th className="p-3 text-left border-b w-[200px]">Aktueller Betreiber</th>
+                    <th className="p-3 text-left border-b w-[380px]">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1637,49 +1637,53 @@ export const AdminDashboard = () => {
                         </td>
                         <td className="p-3">{loc.address}</td>
                         <td className="p-3">{loc.city}, {loc.postal_code}</td>
-                        <td className="p-3">
+                        <td className="p-3 w-[200px]">
                           {loc.current_operator ? (
-                            <div>
-                              <p className="font-semibold">
+                            <div className="max-w-full">
+                              <p className="font-semibold truncate" title={`${loc.current_operator.first_name} ${loc.current_operator.last_name}`}>
                                 {loc.current_operator.first_name} {loc.current_operator.last_name}
                               </p>
-                              <p className="text-xs text-gray-500">@{loc.current_operator.username}</p>
+                              <p className="text-xs text-gray-500 truncate" title={`@${loc.current_operator.username}`}>
+                                @{loc.current_operator.username}
+                              </p>
                             </div>
                           ) : (
                             <span className="text-gray-400 italic">Nicht zugewiesen</span>
                           )}
                         </td>
-                        <td className="p-3 space-x-2">
-                          <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                            onClick={() => handleViewLocation(loc)}
-                          >
-                            Details anzeigen
-                          </button>
-                          <button
-                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                            onClick={() => {
-                              setAssigningLocationId(loc.id);
-                              setShowAssignModal(true);
-                            }}
-                          >
-                            Zuweisen
-                          </button>
-                          <button
-                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
-                            onClick={() => {
-                              setEditingLocationId(loc.id);
-                              setEditingLocation(loc);
-                            }}
-                          >
-                            Bearbeiten
-                          </button>
-                          <button
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                            onClick={() => handleDeleteLocation(loc.id)}
-                          >
-                            Löschen
-                          </button>
+                        <td className="p-3 w-[380px]">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
+                              onClick={() => handleViewLocation(loc)}
+                            >
+                              Details anzeigen
+                            </button>
+                            <button
+                              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
+                              onClick={() => {
+                                setAssigningLocationId(loc.id);
+                                setShowAssignModal(true);
+                              }}
+                            >
+                              Zuweisen
+                            </button>
+                            <button
+                              className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
+                              onClick={() => {
+                                setEditingLocationId(loc.id);
+                                setEditingLocation(loc);
+                              }}
+                            >
+                              Bearbeiten
+                            </button>
+                            <button
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
+                              onClick={() => handleDeleteLocation(loc.id)}
+                            >
+                              Löschen
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -1715,8 +1719,8 @@ export const AdminDashboard = () => {
                           key={pageNum}
                           onClick={() => setCurrentLocationPage(pageNum)}
                           className={`px-3 py-1 border rounded ${currentLocationPage === pageNum
-                              ? 'bg-blue-500 text-white'
-                              : 'hover:bg-gray-100'
+                            ? 'bg-blue-500 text-white'
+                            : 'hover:bg-gray-100'
                             }`}
                         >
                           {pageNum}

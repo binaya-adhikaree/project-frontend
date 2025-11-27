@@ -74,7 +74,7 @@ function MainLayout() {
 
   const publicRoutesWithNavbar = ["/", "/home", "/about", "/contact", "/problems", "/login"];
   const shouldShowPublicNavbar = publicRoutesWithNavbar.includes(location.pathname) && !user;
-const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !user;
+  const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !user;
 
   const shouldShowAuthNavbar = user !== null;
 
@@ -84,7 +84,7 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
       {shouldShowAuthNavbar && <Navbar />}
 
       <Routes>
-  
+
         <Route path="/" element={<AuthenticatedRedirect />} />
         <Route
           path="/home"
@@ -119,10 +119,10 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
           }
         />
 
-      
+
         <Route path="/pricing" element={<Pricing />} />
 
-  
+
         <Route
           path="/dashboard/subscription/success"
           element={
@@ -139,7 +139,7 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
             </PrivateRoute>
           }
         />
-       
+
         <Route
           path="/login"
           element={
@@ -154,7 +154,7 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
           }
         />
 
-    
+
         <Route
           path="/admin/*"
           element={
@@ -182,7 +182,7 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
           }
         />
 
-     
+
         <Route
           path="*"
           element={
@@ -198,7 +198,7 @@ const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !
         />
       </Routes>
 
-         {shouldShowFooter && <Footer />}
+      {shouldShowFooter && <Footer />}
     </>
   );
 }

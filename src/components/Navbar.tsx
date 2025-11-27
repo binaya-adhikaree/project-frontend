@@ -138,6 +138,7 @@ export const Navbar = () => {
               </Link>
             )}
 
+
             {/* Mobile Logout */}
             <button
               onClick={() => {

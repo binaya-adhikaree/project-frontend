@@ -21,17 +21,17 @@ function PublicNavbar() {
             <Link
               to="/home"
               className={`font-semibold text-base transition-all duration-200 py-2 ${isActive("/home") || isActive("/")
-                  ? "text-indigo-400"
-                  : "text-gray-200 hover:text-indigo-300"
+                ? "text-indigo-400"
+                : "text-gray-200 hover:text-indigo-300"
                 }`}
             >
-              Startseite   
+              Startseite
             </Link>
             <Link
               to="/problems"
               className={`font-semibold text-base transition-all duration-200 py-2 ${isActive("/problems")
-                  ? "text-indigo-400"
-                  : "text-gray-200 hover:text-indigo-300"
+                ? "text-indigo-400"
+                : "text-gray-200 hover:text-indigo-300"
                 }`}
             >
               Probleme
@@ -40,8 +40,8 @@ function PublicNavbar() {
             <Link
               to="/about"
               className={`font-semibold text-base transition-all duration-200 py-2 ${isActive("/about")
-                  ? "text-indigo-400"
-                  : "text-gray-200 hover:text-indigo-300"
+                ? "text-indigo-400"
+                : "text-gray-200 hover:text-indigo-300"
                 }`}
             >
               Über uns
@@ -49,8 +49,8 @@ function PublicNavbar() {
             <Link
               to="/contact"
               className={`font-semibold text-base transition-all duration-200 py-2 ${isActive("/contact")
-                  ? "text-indigo-400"
-                  : "text-gray-200 hover:text-indigo-300"
+                ? "text-indigo-400"
+                : "text-gray-200 hover:text-indigo-300"
                 }`}
             >
               Kontakt
@@ -100,8 +100,8 @@ function PublicNavbar() {
               to="/home"
               onClick={() => setIsMenuOpen(false)}
               className={`block font-semibold transition-all duration-200 py-3 px-4 rounded-lg ${isActive("/home") || isActive("/")
-                  ? "text-indigo-400 bg-gray-700"
-                  : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
+                ? "text-indigo-400 bg-gray-700"
+                : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
                 }`}
             >
               Startseite
@@ -110,18 +110,29 @@ function PublicNavbar() {
               to="/about"
               onClick={() => setIsMenuOpen(false)}
               className={`block font-semibold transition-all duration-200 py-3 px-4 rounded-lg ${isActive("/about")
-                  ? "text-indigo-400 bg-gray-700"
-                  : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
+                ? "text-indigo-400 bg-gray-700"
+                : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
                 }`}
             >
               Über uns
+            </Link>
+
+            <Link
+              to="/problems"
+              onClick={() => setIsMenuOpen(false)}
+              className={`block font-semibold transition-all duration-200 py-3 px-4 rounded-lg ${isActive("/about")
+                ? "text-indigo-400 bg-gray-700"
+                : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
+                }`}
+            >
+              Probleme
             </Link>
             <Link
               to="/contact"
               onClick={() => setIsMenuOpen(false)}
               className={`block font-semibold transition-all duration-200 py-3 px-4 rounded-lg ${isActive("/contact")
-                  ? "text-indigo-400 bg-gray-700"
-                  : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
+                ? "text-indigo-400 bg-gray-700"
+                : "text-gray-200 hover:text-indigo-300 hover:bg-gray-700"
                 }`}
             >
               Kontakt
