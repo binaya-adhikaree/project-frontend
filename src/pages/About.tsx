@@ -3,7 +3,7 @@ import { Wrench, FileText, Shield, CheckCircle, Clock, Award, User, Target } fro
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-orange-50 via-white to-yellow-50">
-      {/* Hero Section */}
+ 
       <div className="relative overflow-hidden bg-linear-to-r from-amber-600 via-orange-600 to-yellow-600 text-white">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
