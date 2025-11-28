@@ -140,7 +140,7 @@ function PublicNavbar() {
             <Link
               to="/login"
               onClick={() => setIsMenuOpen(false)}
-              className="block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-200 font-semibold text-center mt-3 shadow-md"
+              className="block bg-[#DFA927] text-white px-7 py-2.5 rounded-lg hover:bg-[#c4901f] transition-all duration-200 font-semibold text-center mt-3 shadow-md"
             >
               Anmeldung
             </Link>

@@ -17,6 +17,7 @@ import Problems from "./pages/Problems";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionManagement from "./components/SubscriptionManagement";
 import Footer from "./components/Footer";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -72,7 +73,7 @@ function MainLayout() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
 
-  const publicRoutesWithNavbar = ["/", "/home", "/about", "/contact", "/problems", "/login"];
+  const publicRoutesWithNavbar = ["/", "/home", "/about", "/contact", "/problems", "/login", "/register"];
   const shouldShowPublicNavbar = publicRoutesWithNavbar.includes(location.pathname) && !user;
   const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !user;
 
@@ -119,6 +120,14 @@ function MainLayout() {
           }
         />
 
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
 
         <Route path="/pricing" element={<Pricing />} />
 

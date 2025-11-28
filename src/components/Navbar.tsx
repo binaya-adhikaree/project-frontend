@@ -32,7 +32,7 @@ export const Navbar = () => {
     <nav className="bg-[#444444] border-b border-gray-600 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-      
+
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-3 group">
               <h1 className="text-xl font-bold text-white hidden sm:block">
@@ -40,7 +40,7 @@ export const Navbar = () => {
               </h1>
             </Link>
 
-           
+
             {user.role === "GASTRONOM" && (
               <Link
                 to="/pricing"
@@ -126,7 +126,17 @@ export const Navbar = () => {
               </div>
             </div>
 
-            {/* Mobile Pricing Link */}
+            {user.role === "GASTRONOM" && (
+              <Link
+                to="/subscription"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition-all"
+              >
+                <CreditCard className="w-5 h-5" />
+                Abonnement
+              </Link>
+            )}
+
             {user.role === "GASTRONOM" && (
               <Link
                 to="/pricing"

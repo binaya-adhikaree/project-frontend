@@ -93,6 +93,13 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        <div className="flex items-center justify-center gap-2 mt-2">
+          <h4>
+            Don't have an account?
+          </h4>
+          <a href="/register" className="text-blue-600 cursor-pointer">Sign up here</a>
+        </div>
       </div>
     </div>
   );

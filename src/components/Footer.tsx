@@ -2,18 +2,18 @@ import logo from "../images/logo.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12 px-6">
+    <footer className="bg-gray-900 text-white py-8 sm:py-10 lg:py-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8 text-center sm:text-left">
 
-          <div>
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <img src={logo} className="h-12 w-12" alt="Logo" />
-              Fettabscheider Sanierung Berlin
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2 justify-center sm:justify-start">
+              <img src={logo} className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0" alt="Logo" />
+              <span className="leading-tight">Fettabscheider Sanierung Berlin</span>
             </h3>
-            <div className="text-gray-400 space-y-2">
-              <p className="flex items-start gap-2">
-                <span className="font-medium">Telefonnummer:</span>
+            <div className="text-gray-400 space-y-2 text-sm sm:text-base">
+              <p className="flex items-start gap-2 justify-center sm:justify-start flex-wrap">
+                <span className="font-medium whitespace-nowrap">Telefonnummer:</span>
                 <a href="tel:017645769973" className="hover:text-blue-400 transition-colors">
                   017645769973
                 </a>
@@ -22,8 +22,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-gray-400">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Support</h3>
+            <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
               <li>
                 <a href="#weekdays" className="hover:text-white transition-colors">
                   Wochentage
@@ -37,14 +37,14 @@ export default function Footer() {
               <li className="pt-2">
                 <span className="font-medium">Telefonnummer:</span>
                 <br />
-                <a href="tel:017645769973" className="hover:text-blue-400 transition-colors">
+                <a href="tel:017645769973" className="hover:text-blue-400 transition-colors break-all">
                   017645769973
                 </a>
               </li>
               <li>
                 <span className="font-medium">E-Mail-Adresse:</span>
                 <br />
-                <a href="mailto:info@geske-technik.de" className="hover:text-blue-400 transition-colors">
+                <a href="mailto:info@geske-technik.de" className="hover:text-blue-400 transition-colors break-all">
                   info@geske-technik.de
                 </a>
               </li>
@@ -52,8 +52,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4">Schnellzugriff</h3>
-            <ul className="space-y-2 text-gray-400">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Schnellzugriff</h3>
+            <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
               <li>
                 <a href="#problems" className="hover:text-white transition-colors">
                   Probleme
@@ -79,8 +79,8 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Kontakt</h3>
-            <ul className="space-y-2 text-gray-400">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Kontakt</h3>
+            <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
               <li>
                 <a href="/home" className="hover:text-white transition-colors">
                   Startseite
@@ -100,7 +100,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-6 text-center text-gray-400 text-sm">
+        <div className="border-t border-gray-800 pt-4 sm:pt-6 text-center text-gray-400 text-xs sm:text-sm">
           <p>© {new Date().getFullYear()} Alle Rechte vorbehalten</p>
         </div>
       </div>

@@ -1122,7 +1122,7 @@ export const AdminDashboard = () => {
       <div className="flex space-x-2 mb-6 border-b">
         <button
           onClick={() => setActiveTab("users")}
-          className={`px-6 py-3 font-semibold transition-all ${activeTab === "users"
+          className={`px-6 py-3 font-semibold transition-all cursor-pointer ${activeTab === "users"
             ? "border-b-4 border-yellow-500 text-yellow-600"
             : "text-gray-500 hover:text-gray-700"
             }`}
@@ -1131,7 +1131,7 @@ export const AdminDashboard = () => {
         </button>
         <button
           onClick={() => setActiveTab("locations")}
-          className={`px-6 py-3 font-semibold transition-all ${activeTab === "locations"
+          className={`px-6 py-3 font-semibold transition-all cursor-pointer ${activeTab === "locations"
             ? "border-b-4 border-yellow-500 text-yellow-600"
             : "text-gray-500 hover:text-gray-700"
             }`}
@@ -1142,68 +1142,78 @@ export const AdminDashboard = () => {
 
       {activeTab === "users" && (
         <>
-          <div className="mb-8 border border-yellow-400 p-6 rounded-lg bg-yellow-50 shadow-md">
-            <h2 className="text-xl mb-4 font-bold text-gray-800">➕ Neuen Benutzer erstellen</h2>
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleCreateUser}>
+          <div className="mb-6 sm:mb-8 border border-yellow-400 p-4 sm:p-6 rounded-lg bg-yellow-50 shadow-md">
+            <h2 className="text-lg sm:text-xl mb-3 sm:mb-4 font-bold text-gray-800">
+              ➕ Neuen Benutzer erstellen
+            </h2>
+
+            <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-3">
               <input
                 type="text"
                 placeholder="Username *"
                 value={newUser.username}
                 onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="email"
                 placeholder="E-mail *"
                 value={newUser.email}
                 onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="text"
                 placeholder="Vorname *"
                 value={newUser.first_name}
                 onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="text"
                 placeholder="Nachname *"
                 value={newUser.last_name}
                 onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="password"
                 placeholder="Passwort *"
                 value={newUser.password}
                 onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="password"
                 placeholder="Passwort bestätigen *"
                 value={newUser.password2}
                 onChange={(e) => setNewUser({ ...newUser, password2: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
                 required
               />
+
               <input
                 type="tel"
                 placeholder="Telefon (optional)"
                 value={newUser.phone}
                 onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               />
+
               <select
                 value={newUser.role}
                 onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-white"
               >
                 <option value="ADMIN">ADMIN</option>
                 <option value="GASTRONOM">GASTRONOM</option>
@@ -1216,7 +1226,7 @@ export const AdminDashboard = () => {
                   placeholder="Company Name (required for External) *"
                   value={newUser.company_name}
                   onChange={(e) => setNewUser({ ...newUser, company_name: e.target.value })}
-                  className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                  className="w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none sm:col-span-2"
                   required
                 />
               )}
@@ -1224,10 +1234,11 @@ export const AdminDashboard = () => {
               <select
                 value={newUser.assigned_location}
                 onChange={(e) => setNewUser({ ...newUser, assigned_location: e.target.value })}
-                className="border p-2 rounded focus:ring-2 focus:ring-yellow-500"
+                className={`w-full border p-2 sm:p-2.5 rounded text-sm sm:text-base focus:ring-2 focus:ring-yellow-500 focus:outline-none bg-white ${newUser.role !== "GASTRONOM" ? 'opacity-50 cursor-not-allowed' : ''
+                  } ${newUser.role === "EXTERNAL" ? '' : 'sm:col-span-2'}`}
                 disabled={newUser.role !== "GASTRONOM"}
               >
-                <option value="">Standort zuweisen (optional))</option>
+                <option value="">Standort zuweisen (optional)</option>
                 {locations.map((loc) => (
                   <option key={loc.id} value={loc.id}>
                     {loc.name} - {loc.location_id}
@@ -1236,12 +1247,12 @@ export const AdminDashboard = () => {
               </select>
 
               <button
-                type="submit"
-                className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded col-span-2 font-semibold transition-all shadow-md"
+                onClick={handleCreateUser}
+                className="w-full bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 cursor-pointer text-white p-2.5 sm:p-3 rounded sm:col-span-2 font-semibold transition-all shadow-md text-sm sm:text-base"
               >
                 Benutzer erstellen
               </button>
-            </form>
+            </div>
           </div>
 
           <div className="p-4 max-w-7xl mx-auto">
@@ -1550,28 +1561,28 @@ export const AdminDashboard = () => {
           </div>
 
           <div className="bg-white border rounded-lg shadow-md overflow-hidden">
-            <h2 className="text-2xl p-4 font-bold bg-gray-100 border-b">
+            <h2 className="text-xl sm:text-2xl p-3 sm:p-4 font-bold bg-gray-100 border-b">
               Alle Standorte ({filteredLocations.length})
             </h2>
 
             {/* Search and Filter Section */}
-            <div className="p-4 bg-gray-50 border-b space-y-3">
-              <div className="flex flex-col md:flex-row gap-3">
-                <div className="flex-1">
+            <div className="p-3 sm:p-4 bg-gray-50 border-b space-y-3">
+              <div className="flex flex-col gap-3">
+                <div className="w-full">
                   <input
                     type="text"
-                    placeholder="Suche nach Name, Standort-ID, Adresse, Stadt, Betreiber..."
+                    placeholder="Suche nach Name, Standort-ID, Adresse..."
                     value={locationSearchTerm}
                     onChange={(e) => handleLocationSearchChange(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="md:w-48">
+                <div className="w-full sm:w-auto">
                   <select
                     value={operatorFilter}
                     onChange={(e) => handleOperatorFilterChange(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="ALL">Alle Standorte</option>
                     <option value="ASSIGNED">Mit Betreiber</option>
@@ -1583,33 +1594,117 @@ export const AdminDashboard = () => {
               {/* Active Filters Display */}
               {(locationSearchTerm || operatorFilter !== 'ALL') && (
                 <div className="flex flex-wrap gap-2 items-center">
-                  <span className="text-sm text-gray-600">Aktive Filter:</span>
+                  <span className="text-xs sm:text-sm text-gray-600">Aktive Filter:</span>
                   {locationSearchTerm && (
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-1">
-                      Suche: "{locationSearchTerm}"
-                      <button onClick={() => handleLocationSearchChange('')} className="hover:text-blue-900">×</button>
+                    <span className="px-2 sm:px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs sm:text-sm flex items-center gap-1">
+                      Suche: "{locationSearchTerm.length > 15 ? locationSearchTerm.substring(0, 15) + '...' : locationSearchTerm}"
+                      <button onClick={() => handleLocationSearchChange('')} className="hover:text-blue-900 ml-1">×</button>
                     </span>
                   )}
                   {operatorFilter !== 'ALL' && (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm flex items-center gap-1">
+                    <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm flex items-center gap-1">
                       Status: {operatorFilter === 'ASSIGNED' ? 'Mit Betreiber' : 'Ohne Betreiber'}
-                      <button onClick={() => handleOperatorFilterChange('ALL')} className="hover:text-green-900">×</button>
+                      <button onClick={() => handleOperatorFilterChange('ALL')} className="hover:text-green-900 ml-1">×</button>
                     </span>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="block lg:hidden">
+              {currentLocations.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">
+                  Keine Standorte gefunden
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {currentLocations.map((loc) => (
+                    <div key={loc.id} className="p-4 hover:bg-gray-50">
+                      <div className="space-y-3">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-2">
+                          <button
+                            onClick={() => handleViewLocation(loc)}
+                            className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-left flex-1"
+                          >
+                            {loc.name}
+                          </button>
+                          <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-mono whitespace-nowrap">
+                            {loc.location_id}
+                          </span>
+                        </div>
+
+                        {/* Address */}
+                        <div className="text-sm text-gray-600">
+                          <p>{loc.address}</p>
+                          <p>{loc.city}, {loc.postal_code}</p>
+                        </div>
+
+                        {/* Operator */}
+                        <div className="text-sm">
+                          <span className="text-gray-500">Betreiber: </span>
+                          {loc.current_operator ? (
+                            <span className="font-medium">
+                              {loc.current_operator.first_name} {loc.current_operator.last_name}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 italic">Nicht zugewiesen</span>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-2 gap-2 pt-2">
+                          <button
+                            className="bg-blue-500 hover:bg-blue-600b
+                             text-white px-3 py-2 rounded text-sm font-semibold"
+                            onClick={() => handleViewLocation(loc)}
+                          >
+                            Details
+                          </button>
+                          <button
+                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded text-sm font-semibold"
+                            onClick={() => {
+                              setAssigningLocationId(loc.id);
+                              setShowAssignModal(true);
+                            }}
+                          >
+                            Zuweisen
+                          </button>
+                          <button
+                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-2 rounded text-sm font-semibold"
+                            onClick={() => {
+                              setEditingLocationId(loc.id);
+                              setEditingLocation(loc);
+                            }}
+                          >
+                            Bearbeiten
+                          </button>
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm font-semibold"
+                            onClick={() => handleDeleteLocation(loc.id)}
+                          >
+                            Löschen
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="p-3 text-left border-b">Restaurantname</th>
-                    <th className="p-3 text-left border-b">Standort-ID</th>
-                    <th className="p-3 text-left border-b">Adresse</th>
-                    <th className="p-3 text-left border-b">Stadt</th>
-                    <th className="p-3 text-left border-b w-[200px]">Aktueller Betreiber</th>
-                    <th className="p-3 text-left border-b w-[380px]">Aktionen</th>
+                    <th className="p-3 text-left border-b text-sm">Restaurantname</th>
+                    <th className="p-3 text-left border-b text-sm">Standort-ID</th>
+                    <th className="p-3 text-left border-b text-sm">Adresse</th>
+                    <th className="p-3 text-left border-b text-sm">Stadt</th>
+                    <th className="p-3 text-left border-b text-sm">Aktueller Betreiber</th>
+                    <th className="p-3 text-left border-b text-sm">Aktionen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1635,29 +1730,29 @@ export const AdminDashboard = () => {
                             {loc.location_id}
                           </span>
                         </td>
-                        <td className="p-3">{loc.address}</td>
-                        <td className="p-3">{loc.city}, {loc.postal_code}</td>
-                        <td className="p-3 w-[200px]">
+                        <td className="p-3 text-sm">{loc.address}</td>
+                        <td className="p-3 text-sm">{loc.city}, {loc.postal_code}</td>
+                        <td className="p-3">
                           {loc.current_operator ? (
-                            <div className="max-w-full">
-                              <p className="font-semibold truncate" title={`${loc.current_operator.first_name} ${loc.current_operator.last_name}`}>
+                            <div>
+                              <p className="font-semibold text-sm">
                                 {loc.current_operator.first_name} {loc.current_operator.last_name}
                               </p>
-                              <p className="text-xs text-gray-500 truncate" title={`@${loc.current_operator.username}`}>
+                              <p className="text-xs text-gray-500">
                                 @{loc.current_operator.username}
                               </p>
                             </div>
                           ) : (
-                            <span className="text-gray-400 italic">Nicht zugewiesen</span>
+                            <span className="text-gray-400 italic text-sm">Nicht zugewiesen</span>
                           )}
                         </td>
-                        <td className="p-3 w-[380px]">
+                        <td className="p-3">
                           <div className="flex flex-wrap gap-2">
                             <button
                               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
                               onClick={() => handleViewLocation(loc)}
                             >
-                              Details anzeigen
+                              Details
                             </button>
                             <button
                               className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold whitespace-nowrap"
@@ -1694,16 +1789,16 @@ export const AdminDashboard = () => {
 
             {/* Pagination */}
             {filteredLocations.length > 0 && (
-              <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-sm text-gray-600">
+              <div className="p-3 sm:p-4 bg-gray-50 border-t flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
                   Zeige {indexOfFirstLocation + 1} bis {Math.min(indexOfLastLocation, filteredLocations.length)} von {filteredLocations.length} Standorten
                 </div>
 
-                <div className="flex gap-1">
+                <div className="flex gap-1 flex-wrap justify-center">
                   <button
                     onClick={() => setCurrentLocationPage(currentLocationPage - 1)}
                     disabled={currentLocationPage === 1}
-                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-2 sm:px-3 py-1 text-sm border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     ‹
                   </button>
@@ -1718,7 +1813,7 @@ export const AdminDashboard = () => {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentLocationPage(pageNum)}
-                          className={`px-3 py-1 border rounded ${currentLocationPage === pageNum
+                          className={`px-2 sm:px-3 py-1 text-sm border rounded ${currentLocationPage === pageNum
                             ? 'bg-blue-500 text-white'
                             : 'hover:bg-gray-100'
                             }`}
@@ -1730,7 +1825,7 @@ export const AdminDashboard = () => {
                       pageNum === currentLocationPage - 2 ||
                       pageNum === currentLocationPage + 2
                     ) {
-                      return <span key={pageNum} className="px-2">...</span>;
+                      return <span key={pageNum} className="px-1 sm:px-2">...</span>;
                     }
                     return null;
                   })}
@@ -1738,7 +1833,7 @@ export const AdminDashboard = () => {
                   <button
                     onClick={() => setCurrentLocationPage(currentLocationPage + 1)}
                     disabled={currentLocationPage === totalLocationPages}
-                    className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-2 sm:px-3 py-1 text-sm border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     ›
                   </button>
