@@ -172,7 +172,7 @@ const Pricing = () => {
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Monatlich</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-gray-900">3,99 €</span>
+                  <span className="text-5xl font-bold text-gray-900">3.99 €</span>
                   <span className="text-gray-600 text-lg">/Monat</span>
                 </div>
                 {isSubscribed("MONTHLY") ? (
@@ -222,7 +222,7 @@ const Pricing = () => {
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Jährlich</h3>
                 <div className="mb-2">
-                  <span className="text-5xl font-bold text-gray-900">39,99 €</span>
+                  <span className="text-5xl font-bold text-gray-900">39.99 €</span>
                   <span className="text-gray-600 text-lg">/Jahr</span>
                 </div>
                 <p className="text-sm text-indigo-600 font-semibold mb-6">
