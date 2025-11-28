@@ -30,7 +30,7 @@ export default function Register() {
     e.preventDefault();
 
     if (formData.password !== formData.password2) {
-      alert("Passwords do not match!");
+      alert("Passwörter stimmen nicht überein!");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function Register() {
 
     try {
       await api.post("/auth/register/", formData);
-      alert("Registration successful! Please login.");
+      alert("Registrierung erfolgreich! Bitte melden Sie sich an.");
       navigate("/login");
     } catch (error: any) {
       if (error.response?.data) {
@@ -53,10 +53,10 @@ export default function Register() {
         } else if (errorData.detail) {
           alert(errorData.detail);
         } else {
-          alert("Registration failed. Please check your input.");
+          alert("Registrierung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.");
         }
       } else {
-        alert("An error occurred during registration");
+        alert("Ein Fehler ist bei der Registrierung aufgetreten");
       }
       console.error(error);
     } finally {
@@ -68,18 +68,18 @@ export default function Register() {
     <div className="flex items-center justify-center min-h-[calc(100vh-5rem)] bg-linear-to-br from-blue-100 via-white to-blue-50 py-8">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
         <h2 className="text-3xl font-bold text-center text-[#DFA927] mb-6">
-          Create Account
+          Konto Erstellen
         </h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Username <span className="text-red-500">*</span>
+              Benutzername <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               name="username"
-              placeholder="Enter your username"
+              placeholder="Benutzername eingeben"
               value={formData.username}
               onChange={handleChange}
               required
@@ -89,12 +89,12 @@ export default function Register() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email <span className="text-red-500">*</span>
+              E-Mail <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
+              placeholder="E-Mail eingeben"
               value={formData.email}
               onChange={handleChange}
               required
@@ -105,12 +105,12 @@ export default function Register() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                First Name <span className="text-red-500">*</span>
+                Vorname <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 name="first_name"
-                placeholder="First name"
+                placeholder="Vorname"
                 value={formData.first_name}
                 onChange={handleChange}
                 required
@@ -120,12 +120,12 @@ export default function Register() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name <span className="text-red-500">*</span>
+                Nachname <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 name="last_name"
-                placeholder="Last name"
+                placeholder="Nachname"
                 value={formData.last_name}
                 onChange={handleChange}
                 required
@@ -136,12 +136,12 @@ export default function Register() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone (Optional)
+              Telefon (Optional)
             </label>
             <input
               type="tel"
               name="phone"
-              placeholder="Enter your phone number"
+              placeholder="Telefonnummer eingeben"
               value={formData.phone}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
@@ -150,12 +150,12 @@ export default function Register() {
 
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password <span className="text-red-500">*</span>
+              Passwort <span className="text-red-500">*</span>
             </label>
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Enter your password"
+              placeholder="Passwort eingeben"
               value={formData.password}
               onChange={handleChange}
               required
@@ -172,12 +172,12 @@ export default function Register() {
 
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password <span className="text-red-500">*</span>
+              Passwort Bestätigen <span className="text-red-500">*</span>
             </label>
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="password2"
-              placeholder="Confirm your password"
+              placeholder="Passwort bestätigen"
               value={formData.password2}
               onChange={handleChange}
               required
@@ -201,18 +201,18 @@ export default function Register() {
             {loading ? (
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Creating account...
+                Konto wird erstellt...
               </div>
             ) : (
-              "Sign Up"
+              "Registrieren"
             )}
           </button>
         </form>
 
         <div className="flex items-center justify-center gap-2 mt-4">
-          <h4>Already have an account?</h4>
+          <h4>Haben Sie bereits ein Konto?</h4>
           <a href="/login" className="text-blue-600 cursor-pointer">
-            Login here
+            Hier anmelden
           </a>
         </div>
       </div>
