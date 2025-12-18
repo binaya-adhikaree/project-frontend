@@ -1,28 +1,25 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useContext } from "react";
-
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import { AuthContext } from "./context/AuthContext";
-
+import Login from "./pages/Login";
+import { AdminDashboard } from "./pages/AdminDashboard";
+import { UserDashboard } from "./pages/UserDashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import { Navbar } from "./components/Navbar";
-import PublicNavbar from "./pages/PublicNavbar";
-import Footer from "./components/Footer";
-
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
+import ExternalDashboard from "./pages/ExternalDashboard";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Problems from "./pages/Problems";
+import PublicNavbar from "./pages/PublicNavbar";
 import Pricing from "./pages/Pricing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-
-import { AdminDashboard } from "./pages/AdminDashboard";
-import { UserDashboard } from "./pages/UserDashboard";
-import ExternalDashboard from "./pages/ExternalDashboard";
-
+import Problems from "./pages/Problems";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionManagement from "./components/SubscriptionManagement";
+import Footer from "./components/Footer";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -34,8 +31,8 @@ function App() {
   );
 }
 
-/* ---------------- PUBLIC ROUTE ---------------- */
-function PublicRoute({ children }) {
+// Fixed: Added proper type annotation for children
+function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user } = useContext(AuthContext);
 
   if (user) {
@@ -51,52 +48,115 @@ function PublicRoute({ children }) {
     }
   }
 
-  return children;
+  return <>{children}</>;
 }
 
-/* ---------------- MAIN LAYOUT ---------------- */
 function MainLayout() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
 
-  const publicRoutes = [
-    "/",
-    "/about",
-    "/contact",
-    "/problems",
-    "/pricing",
-    "/login",
-    "/register",
-  ];
+  // Updated: Removed /home from public routes
+  const publicRoutesWithNavbar = ["/", "/about", "/contact", "/problems", "/login", "/register", "/forgot-password", "/pricing"];
+  const shouldShowPublicNavbar = publicRoutesWithNavbar.includes(location.pathname) && !user;
+  const shouldShowFooter = publicRoutesWithNavbar.includes(location.pathname) && !user;
 
-  const showPublicNavbar = publicRoutes.includes(location.pathname) && !user;
-  const showFooter = publicRoutes.includes(location.pathname) && !user;
-  const showAuthNavbar = !!user;
+  const shouldShowAuthNavbar = user !== null;
 
   return (
     <>
-      {showPublicNavbar && <PublicNavbar />}
-      {showAuthNavbar && <Navbar />}
+      {shouldShowPublicNavbar && <PublicNavbar />}
+      {shouldShowAuthNavbar && <Navbar />}
 
       <Routes>
-        {/* HOME */}
+        {/* Fixed: Homepage at root - shows Home for guests, redirects authenticated users */}
         <Route
           path="/"
           element={
-            <PublicRoute>
+            user ? (
+              user.role === "ADMIN" ? <Navigate to="/admin" replace /> :
+              user.role === "GASTRONOM" ? <Navigate to="/user" replace /> :
+              user.role === "EXTERNAL" ? <Navigate to="/external" replace /> :
+              <Navigate to="/login" replace />
+            ) : (
               <Home />
+            )
+          }
+        />
+
+        {/* Public Routes */}
+        <Route
+          path="/about"
+          element={
+            <PublicRoute>
+              <About />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <PublicRoute>
+              <Contact />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/problems"
+          element={
+            <PublicRoute>
+              <Problems />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
             </PublicRoute>
           }
         />
 
-        {/* PUBLIC PAGES */}
-        <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
-        <Route path="/contact" element={<PublicRoute><Contact /></PublicRoute>} />
-        <Route path="/problems" element={<PublicRoute><Problems /></PublicRoute>} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        {/* Password Reset Routes */}
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password/:uid/:token"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
 
-        {/* LOGIN */}
+        {/* Pricing - accessible to all */}
+        <Route path="/pricing" element={<Pricing />} />
+
+        {/* Subscription Routes */}
+        <Route
+          path="/dashboard/subscription/success"
+          element={
+            <PrivateRoute role="GASTRONOM">
+              <SubscriptionSuccess />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/user/subscription"
+          element={
+            <PrivateRoute role="GASTRONOM">
+              <SubscriptionManagement />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Login Route */}
         <Route
           path="/login"
           element={
@@ -111,7 +171,7 @@ function MainLayout() {
           }
         />
 
-        {/* DASHBOARDS */}
+        {/* Dashboard Routes */}
         <Route
           path="/admin/*"
           element={
@@ -120,7 +180,6 @@ function MainLayout() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/user/*"
           element={
@@ -129,7 +188,6 @@ function MainLayout() {
             </PrivateRoute>
           }
         />
-
         <Route
           path="/external/*"
           element={
@@ -139,30 +197,23 @@ function MainLayout() {
           }
         />
 
-        {/* SUBSCRIPTIONS */}
+        {/* Catch all - redirect based on auth status */}
         <Route
-          path="/dashboard/subscription/success"
+          path="*"
           element={
-            <PrivateRoute role="GASTRONOM">
-              <SubscriptionSuccess />
-            </PrivateRoute>
+            user ? (
+              user.role === "ADMIN" ? <Navigate to="/admin" replace /> :
+              user.role === "GASTRONOM" ? <Navigate to="/user" replace /> :
+              user.role === "EXTERNAL" ? <Navigate to="/external" replace /> :
+              <Navigate to="/" replace />
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
-
-        <Route
-          path="/user/subscription"
-          element={
-            <PrivateRoute role="GASTRONOM">
-              <SubscriptionManagement />
-            </PrivateRoute>
-          }
-        />
-
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {showFooter && <Footer />}
+      {shouldShowFooter && <Footer />}
     </>
   );
 }

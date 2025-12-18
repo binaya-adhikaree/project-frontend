@@ -3,20 +3,18 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 
-
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
     try {
       await login(username, password);
@@ -27,12 +25,12 @@ export default function Login() {
       } else if (user.role === "GASTRONOM") {
         navigate("/user");
       } else {
-        navigate('/external')
+        navigate('/external');
       }
     } catch {
       alert("Ungültige Anmeldedaten");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -77,6 +75,15 @@ export default function Login() {
             </button>
           </div>
 
+          <div className="flex justify-end">
+            <a 
+              href="/forgot-password" 
+              className="text-sm text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
+            >
+              Passwort vergessen?
+            </a>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -103,4 +110,4 @@ export default function Login() {
       </div>
     </div>
   );
-};
+}
