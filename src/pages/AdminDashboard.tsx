@@ -333,7 +333,6 @@ export const AdminDashboard = () => {
   };
 
 
-
   const handleToggleFormLock = async (formId: number) => {
     try {
       const res = await api.post(
@@ -527,7 +526,6 @@ export const AdminDashboard = () => {
   };
 
 
-
   const handleCreateLocation = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -652,12 +650,10 @@ export const AdminDashboard = () => {
     return matchesSearch && matchesRole;
   });
 
-
   const indexOfLastUser = currentPage * itemsPerPage;
   const indexOfFirstUser = indexOfLastUser - itemsPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
 
 
 
@@ -1851,7 +1847,7 @@ export const AdminDashboard = () => {
             onSubmit={handleEditUser}
             className="bg-white p-6 rounded-lg shadow-xl space-y-3 w-96"
           >
-            <h2 className="text-xl mb-2 font-bold">Edit User</h2>
+            <h2 className="text-xl mb-2 font-bold">Benutzer bearbeiten</h2>
             <input
               type="email"
               placeholder="E-mail"
