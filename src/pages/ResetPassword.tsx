@@ -51,9 +51,9 @@ const ResetPassword: React.FC = () => {
   };
 
   const getStrengthText = () => {
-    if (passwordStrength < 40) return 'Weak';
-    if (passwordStrength < 70) return 'Medium';
-    return 'Strong';
+    if (passwordStrength < 40) return 'Schwach';
+    if (passwordStrength < 70) return 'Mittel';
+    return 'Stark';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,13 +64,13 @@ const ResetPassword: React.FC = () => {
 
     // Client-side validation
     if (newPassword !== confirmPassword) {
-      setErrors(['Passwords do not match']);
+      setErrors(['Passwörter stimmen nicht überein']);
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 8) {
-      setErrors(['Password must be at least 8 characters long']);
+      setErrors(['Passwort muss mindestens 8 Zeichen lang sein']);
       setLoading(false);
       return;
     }
@@ -107,7 +107,7 @@ const ResetPassword: React.FC = () => {
           errorMessages.push(...errorData.confirm_password);
         }
         if (errorData.token) {
-          errorMessages.push('Reset link is invalid or has expired');
+          errorMessages.push('Der Zurücksetzungslink ist ungültig oder abgelaufen');
         }
         if (errorData.uid) {
           errorMessages.push(...errorData.uid);
@@ -116,23 +116,23 @@ const ResetPassword: React.FC = () => {
           errorMessages.push(errorData.error);
         }
 
-        setErrors(errorMessages.length > 0 ? errorMessages : ['An error occurred']);
+        setErrors(errorMessages.length > 0 ? errorMessages : ['Ein Fehler ist aufgetreten']);
       }
     } catch (err) {
-      setErrors(['Network error. Please try again.']);
+      setErrors(['Netzwerkfehler. Bitte versuchen Sie es erneut.']);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-yellow-50 via-white to-amber-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
           {/* Header */}
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto h-16 w-16 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full flex items-center justify-center mb-4">
               <svg
                 className="h-8 w-8 text-white"
                 fill="none"
@@ -148,10 +148,10 @@ const ResetPassword: React.FC = () => {
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-gray-900">
-              Set New Password
+              Neues Passwort festlegen
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Choose a strong password to secure your account
+              Wählen Sie ein starkes Passwort, um Ihr Konto zu sichern
             </p>
           </div>
 
@@ -176,10 +176,10 @@ const ResetPassword: React.FC = () => {
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-green-800">
-                    Password reset successful!
+                    Passwort erfolgreich zurückgesetzt!
                   </h3>
                   <p className="mt-1 text-sm text-green-700">
-                    Redirecting to login page...
+                    Sie werden zur Anmeldeseite weitergeleitet...
                   </p>
                 </div>
               </div>
@@ -221,7 +221,7 @@ const ResetPassword: React.FC = () => {
             {/* New Password Field */}
             <div>
               <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
+                Neues Passwort
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -246,8 +246,8 @@ const ResetPassword: React.FC = () => {
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
-                  placeholder="Enter new password"
+                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  placeholder="Neues Passwort eingeben"
                   disabled={loading}
                 />
               </div>
@@ -256,7 +256,7 @@ const ResetPassword: React.FC = () => {
               {newPassword && (
                 <div className="mt-2">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-gray-600">Password Strength</span>
+                    <span className="text-gray-600">Passwortstärke</span>
                     <span className={`font-medium ${passwordStrength < 40 ? 'text-red-600' : passwordStrength < 70 ? 'text-yellow-600' : 'text-green-600'}`}>
                       {getStrengthText()}
                     </span>
@@ -274,7 +274,7 @@ const ResetPassword: React.FC = () => {
             {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                Passwort bestätigen
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -299,8 +299,8 @@ const ResetPassword: React.FC = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
-                  placeholder="Confirm new password"
+                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  placeholder="Neues Passwort bestätigen"
                   disabled={loading}
                 />
               </div>
@@ -314,34 +314,34 @@ const ResetPassword: React.FC = () => {
                 type="checkbox"
                 checked={showPassword}
                 onChange={(e) => setShowPassword(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded cursor-pointer"
               />
               <label htmlFor="show-password" className="ml-2 block text-sm text-gray-700 cursor-pointer">
-                Show passwords
+                Passwörter anzeigen
               </label>
             </div>
 
             {/* Password Requirements */}
             <div className="bg-gray-50 rounded-xl p-4">
-              <p className="text-xs font-medium text-gray-700 mb-2">Password must contain:</p>
+              <p className="text-xs font-medium text-gray-700 mb-2">Passwort muss enthalten:</p>
               <ul className="space-y-1 text-xs text-gray-600">
                 <li className="flex items-center">
                   <svg className={`h-4 w-4 mr-2 ${newPassword.length >= 8 ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  At least 8 characters
+                  Mindestens 8 Zeichen
                 </li>
                 <li className="flex items-center">
                   <svg className={`h-4 w-4 mr-2 ${/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  Upper & lowercase letters
+                  Groß- & Kleinbuchstaben
                 </li>
                 <li className="flex items-center">
                   <svg className={`h-4 w-4 mr-2 ${/\d/.test(newPassword) ? 'text-green-500' : 'text-gray-400'}`} fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  At least one number
+                  Mindestens eine Zahl
                 </li>
               </ul>
             </div>
@@ -350,7 +350,7 @@ const ResetPassword: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               {loading ? (
                 <>
@@ -374,7 +374,7 @@ const ResetPassword: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Resetting Password...
+                  Passwort wird zurückgesetzt...
                 </>
               ) : (
                 <>
@@ -391,7 +391,7 @@ const ResetPassword: React.FC = () => {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  Reset Password
+                  Passwort zurücksetzen
                 </>
               )}
             </button>
@@ -401,7 +401,7 @@ const ResetPassword: React.FC = () => {
           <div className="text-center">
             <Link
               to="/login"
-              className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+              className="inline-flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-500 transition-colors duration-200"
             >
               <svg
                 className="mr-2 h-4 w-4"
@@ -416,7 +416,7 @@ const ResetPassword: React.FC = () => {
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 />
               </svg>
-              Back to Login
+              Zurück zur Anmeldung
             </Link>
           </div>
         </div>
@@ -424,9 +424,9 @@ const ResetPassword: React.FC = () => {
         {/* Help Text */}
         <div className="mt-6 text-center">
           <p className="text-xs text-gray-500">
-            Link expired?{' '}
-            <Link to="/forgot-password" className="text-blue-600 hover:text-blue-500 font-medium">
-              Request a new one
+            Link abgelaufen?{' '}
+            <Link to="/forgot-password" className="text-yellow-600 hover:text-yellow-500 font-medium">
+              Neuen anfordern
             </Link>
           </p>
         </div>
